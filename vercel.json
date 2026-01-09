@@ -1,0 +1,10 @@
+{
+  "env": {
+    "TS3_SERVER_HOST": "@ts3-server-host",
+    "TS3_QUERY_PORT": "@ts3-query-port",
+    "TS3_QUERY_USERNAME": "@ts3-query-username",
+    "TS3_QUERY_PASSWORD": "@ts3-query-password",
+    "TS3_SERVER_ID": "@ts3-server-id",
+    "TS3_VIRTUAL_PORT": "@ts3-virtual-port"
+  }
+}
