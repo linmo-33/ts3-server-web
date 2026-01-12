@@ -12,11 +12,11 @@ export const DOWNLOAD_LINKS: DownloadLink[] = [
   {
     os: OS.WINDOWS,
     url: 'https://github.com/TeamSpeak-Systems/TeamSpeak-3-Client/releases',
-    version: 'GitHub 备用',
+    version: '备用地址',
   },
 ];
 
 /** 中文汉化包下载地址 */
 export const CHINESE_PATCH_URL =
-  'https://github.com/VigorousPro/TS3-Translation_zh-CN/releases';
+  'https://pan.zerovv.top/d/Local/汉化文件.ts3_translation?sign=44yvxGowUILOett2JrAl3S0omi1W4V3LR4O4tLemyb8=:0';
 

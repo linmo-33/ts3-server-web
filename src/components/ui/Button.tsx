@@ -8,13 +8,13 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 
 const variants = {
   primary:
-    'bg-slate-900 text-white hover:bg-slate-800 dark:bg-red-600 dark:text-white dark:hover:bg-red-500 shadow-lg shadow-slate-200/50 dark:shadow-red-900/20',
+    'bg-gradient-to-r from-cyber-cyan to-cyber-purple text-cyber-bg hover:brightness-110 shadow-lg shadow-cyber-cyan/30',
   secondary:
-    'bg-rose-50 text-rose-700 hover:bg-rose-100 dark:bg-rose-900/30 dark:text-rose-300',
+    'bg-cyber-purple/20 text-cyber-purple hover:bg-cyber-purple/30 border border-cyber-purple/30',
   outline:
-    'border border-slate-200 text-slate-700 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800',
+    'border border-cyber-border text-cyber-text-secondary hover:bg-cyber-cyan/10 hover:border-cyber-cyan/30 hover:text-cyber-cyan',
   ghost:
-    'text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white',
+    'text-cyber-text-muted hover:text-cyber-cyan hover:bg-cyber-cyan/10',
 };
 
 export const Button: React.FC<ButtonProps> = ({

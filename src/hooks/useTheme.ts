@@ -1,26 +1,47 @@
 import { useState, useEffect, useCallback } from 'react';
 
+type Theme = 'light' | 'dark';
+
 export function useTheme() {
-  const [darkMode, setDarkMode] = useState(false);
+  const [theme, setTheme] = useState<Theme>('dark');
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    // Check system preference on mount
-    if (window.matchMedia?.('(prefers-color-scheme: dark)').matches) {
-      setDarkMode(true);
+    setMounted(true);
+    // Check localStorage first, then system preference
+    const stored = localStorage.getItem('theme') as Theme | null;
+    if (stored) {
+      setTheme(stored);
+    } else if (window.matchMedia?.('(prefers-color-scheme: light)').matches) {
+      setTheme('light');
     }
   }, []);
 
   useEffect(() => {
-    if (darkMode) {
+    if (!mounted) return;
+
+    if (theme === 'dark') {
       document.documentElement.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
     }
-  }, [darkMode]);
+    localStorage.setItem('theme', theme);
+  }, [theme, mounted]);
 
   const toggleTheme = useCallback(() => {
-    setDarkMode((prev) => !prev);
+    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
   }, []);
 
-  return { darkMode, toggleTheme };
+  const setLightTheme = useCallback(() => setTheme('light'), []);
+  const setDarkTheme = useCallback(() => setTheme('dark'), []);
+
+  return {
+    theme,
+    isDark: theme === 'dark',
+    isLight: theme === 'light',
+    toggleTheme,
+    setLightTheme,
+    setDarkTheme,
+    mounted
+  };
 }

@@ -6,51 +6,259 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Gaming Red-Black Scrollbar */
+/* ========================================
+   DARK THEME (Cyberpunk) - Default
+   ======================================== */
+
+/* Dark Scrollbar */
+.dark ::-webkit-scrollbar {
+  width: 6px;
+}
+
+.dark ::-webkit-scrollbar-track {
+  background: rgba(13, 13, 26, 0.8);
+  border-radius: 3px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #00F5FF 0%, #BF00FF 100%);
+  border-radius: 3px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #00F5FF 0%, #FF00AA 100%);
+}
+
+/* Dark Card */
+.dark .theme-card {
+  background: linear-gradient(135deg, rgba(20, 20, 40, 0.9) 0%, rgba(13, 13, 26, 0.95) 100%);
+  border: 1px solid rgba(0, 245, 255, 0.1);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+}
+
+.dark .theme-card:hover {
+  border-color: rgba(0, 245, 255, 0.3);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 245, 255, 0.1);
+}
+
+/* Dark Button */
+.dark .theme-btn {
+  background: linear-gradient(135deg, #00F5FF 0%, #BF00FF 100%);
+  box-shadow: 0 4px 20px rgba(0, 245, 255, 0.4), 0 0 60px rgba(191, 0, 255, 0.2);
+  color: #0D0D1A;
+}
+
+.dark .theme-btn:hover {
+  filter: brightness(1.1);
+  box-shadow: 0 6px 30px rgba(0, 245, 255, 0.5), 0 0 80px rgba(191, 0, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Dark Gradient Text */
+.dark .gradient-text {
+  background: linear-gradient(90deg, #00F5FF 0%, #BF00FF 50%, #FF00AA 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Dark Grid */
+.dark .theme-grid {
+  background-image:
+    linear-gradient(rgba(0, 245, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 245, 255, 0.03) 1px, transparent 1px);
+  background-size: 50px 50px;
+}
+
+/* Dark Neon Text */
+.dark .neon-text {
+  text-shadow: 0 0 10px rgba(0, 245, 255, 0.5), 0 0 20px rgba(0, 245, 255, 0.3);
+}
+
+/* ========================================
+   LIGHT THEME (Cream)
+   ======================================== */
+
+/* Light Scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(20, 20, 20, 0.5);
+  background: rgba(255, 248, 240, 0.8);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #ef4444;
+  background: linear-gradient(180deg, #FF8A65 0%, #B39DDB 100%);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #f87171;
+  background: linear-gradient(180deg, #FF7043 0%, #9575CD 100%);
 }
 
-/* Gaming card style */
-.gaming-card {
-  background: linear-gradient(135deg, rgba(20, 20, 20, 0.9) 0%, rgba(15, 15, 15, 0.95) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
-  transition: all 0.2s ease;
+/* Light Card */
+.theme-card {
+  background: #FFFFFF;
+  border: 1px solid rgba(93, 78, 55, 0.1);
+  box-shadow: 0 4px 20px rgba(93, 78, 55, 0.08);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-.gaming-card:hover {
-  border-color: rgba(239, 68, 68, 0.2);
+.theme-card:hover {
+  border-color: rgba(255, 138, 101, 0.3);
+  box-shadow: 0 8px 30px rgba(93, 78, 55, 0.12);
 }
 
-/* Gaming button */
-.gaming-btn {
-  background: linear-gradient(135deg, #dc2626 0%, #ef4444 50%, #f87171 100%);
-  box-shadow: 0 4px 20px rgba(239, 68, 68, 0.3);
-  transition: all 0.2s ease;
+/* Light Button */
+.theme-btn {
+  background: linear-gradient(135deg, #FF8A65 0%, #B39DDB 100%);
+  box-shadow: 0 4px 20px rgba(255, 138, 101, 0.25);
+  color: #FFFFFF;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-.gaming-btn:hover {
-  filter: brightness(1.1);
-  box-shadow: 0 6px 25px rgba(239, 68, 68, 0.4);
-  transform: translateY(-1px);
+.theme-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: left 0.5s ease;
 }
 
-/* Red glow effect */
-.glow-red {
-  box-shadow: 0 0 40px rgba(239, 68, 68, 0.15);
+.theme-btn:hover {
+  filter: brightness(1.05);
+  box-shadow: 0 6px 25px rgba(255, 138, 101, 0.35);
+  transform: translateY(-2px);
+}
+
+.theme-btn:hover::before {
+  left: 100%;
+}
+
+/* Light Gradient Text */
+.gradient-text {
+  background: linear-gradient(90deg, #FF8A65 0%, #B39DDB 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Light Grid (subtle dots) */
+.theme-grid {
+  background-image: radial-gradient(rgba(93, 78, 55, 0.03) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Light Text Glow (subtle) */
+.neon-text {
+  text-shadow: none;
+}
+
+/* ========================================
+   SHARED STYLES
+   ======================================== */
+
+/* Theme transition */
+.theme-card,
+.theme-btn,
+.gradient-text {
+  transition: all 0.3s ease;
+}
+
+/* Animated border - works in both themes */
+.theme-border-animated {
+  position: relative;
+}
+
+.dark .theme-border-animated::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, #00F5FF, #BF00FF, #FF00AA, #00F5FF);
+  background-size: 300% 300%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: gradient-rotate 4s linear infinite;
+  pointer-events: none;
+}
+
+.theme-border-animated::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, #FF8A65, #B39DDB, #FF8A65);
+  background-size: 200% 200%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: gradient-rotate 4s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes gradient-rotate {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Pulse animation */
+.pulse-indicator {
+  animation: pulse-indicator 2s ease-in-out infinite;
+}
+
+.dark .pulse-indicator {
+  --pulse-color: rgba(0, 255, 159, 0.4);
+}
+
+.pulse-indicator {
+  --pulse-color: rgba(129, 199, 132, 0.4);
+}
+
+@keyframes pulse-indicator {
+  0%, 100% { box-shadow: 0 0 0 0 var(--pulse-color); }
+  50% { box-shadow: 0 0 0 8px transparent; }
+}
+
+/* Secondary button */
+.theme-btn-secondary {
+  transition: all 0.3s ease;
+}
+
+.dark .theme-btn-secondary {
+  background: rgba(0, 245, 255, 0.1);
+  border: 1px solid rgba(0, 245, 255, 0.3);
+  color: #00F5FF;
+}
+
+.dark .theme-btn-secondary:hover {
+  background: rgba(0, 245, 255, 0.2);
+  border-color: rgba(0, 245, 255, 0.5);
+}
+
+.theme-btn-secondary {
+  background: rgba(255, 138, 101, 0.1);
+  border: 1px solid rgba(255, 138, 101, 0.3);
+  color: #FF8A65;
+}
+
+.theme-btn-secondary:hover {
+  background: rgba(255, 138, 101, 0.2);
+  border-color: rgba(255, 138, 101, 0.5);
 }

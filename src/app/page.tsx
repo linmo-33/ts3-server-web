@@ -1,6 +1,7 @@
 'use client';
 
 import { useTS3Data } from '@/hooks/useTS3Data';
+import { useTheme } from '@/hooks/useTheme';
 import { Header } from '@/components/sections/Header';
 import { HeroSection } from '@/components/sections/HeroSection';
 import { DownloadSection } from '@/components/sections/DownloadSection';
@@ -10,17 +11,39 @@ import { Footer } from '@/components/sections/Footer';
 
 export default function HomePage() {
   const { loading, error, stats, users } = useTS3Data(30000);
+  const { isDark, toggleTheme, mounted } = useTheme();
+
+  // Prevent flash of wrong theme
+  if (!mounted) {
+    return null;
+  }
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] relative overflow-hidden">
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] via-[#1a1a1a] to-[#0f0f0f]"></div>
+    <div className={`min-h-screen relative overflow-hidden transition-colors duration-300 ${isDark ? 'bg-cyber-bg' : 'bg-cream-bg'}`}>
+      {/* Grid background */}
+      <div className="absolute inset-0 theme-grid"></div>
 
-      {/* Red glow decorations */}
+      {/* Background gradient */}
+      <div className={`absolute inset-0 opacity-80 ${isDark ? 'bg-gradient-to-b from-cyber-bg via-cyber-card to-cyber-bg' : 'bg-gradient-to-b from-cream-bg via-cream-bg-deep to-cream-bg'}`}></div>
+
+      {/* Glow decorations */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -left-40 w-80 h-80 bg-red-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/3 -right-20 w-60 h-60 bg-red-500/5 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-20 left-1/3 w-72 h-72 bg-rose-500/5 rounded-full blur-3xl"></div>
+        {isDark ? (
+          <>
+            {/* Dark theme: Cyan/Purple glows */}
+            <div className="absolute -top-40 -left-40 w-96 h-96 bg-cyber-cyan/20 rounded-full blur-[100px] animate-pulse-glow"></div>
+            <div className="absolute top-1/4 -right-20 w-80 h-80 bg-cyber-purple/15 rounded-full blur-[80px]"></div>
+            <div className="absolute -bottom-20 left-1/3 w-72 h-72 bg-cyber-pink/10 rounded-full blur-[60px]"></div>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-cyber-cyan/5 rounded-full blur-[120px]"></div>
+          </>
+        ) : (
+          <>
+            {/* Light theme: Warm/Soft glows */}
+            <div className="absolute -top-40 -left-40 w-96 h-96 bg-cream-primary/10 rounded-full blur-[100px]"></div>
+            <div className="absolute top-1/4 -right-20 w-80 h-80 bg-cream-secondary/10 rounded-full blur-[80px]"></div>
+            <div className="absolute -bottom-20 left-1/3 w-72 h-72 bg-cream-primary-light/15 rounded-full blur-[60px]"></div>
+          </>
+        )}
       </div>
 
       <div className="relative z-10 py-8 md:py-12 px-4 sm:px-6 lg:px-8">
@@ -29,21 +52,23 @@ export default function HomePage() {
             loading={loading}
             onlineCount={stats.onlineCount}
             serverOnline={!error}
+            isDark={isDark}
+            onToggleTheme={toggleTheme}
           />
 
           {/* Hero + Download */}
           <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <HeroSection />
-            <DownloadSection />
+            <HeroSection isDark={isDark} />
+            <DownloadSection isDark={isDark} />
           </section>
 
           {/* Stats + Users */}
           <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <StatsChart loading={loading} stats={stats} />
-            <UserList loading={loading} users={users} stats={stats} />
+            <StatsChart loading={loading} stats={stats} isDark={isDark} />
+            <UserList loading={loading} users={users} stats={stats} isDark={isDark} />
           </section>
 
-          <Footer />
+          <Footer isDark={isDark} />
         </div>
       </div>
     </div>
