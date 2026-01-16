@@ -1,7 +1,4 @@
-// 服务端历史数据存储（按日统计，文件持久化）
-
-import fs from 'fs';
-import path from 'path';
+// 服务端历史数据存储（内存存储，适用于 serverless 环境）
 
 interface DailyStats {
     date: string;      // 格式: MM-DD
@@ -9,40 +6,24 @@ interface DailyStats {
     timestamp: number; // 记录时间戳
 }
 
-const DATA_FILE = path.join(process.cwd(), 'data', 'stats-history.json');
 const MAX_DAYS = 7; // 保留最近7天
 
+// 使用 globalThis 在热重载时保持数据
+const globalForStats = globalThis as unknown as {
+    statsHistory: DailyStats[];
+    todayMax: number;
+};
+
+globalForStats.statsHistory = globalForStats.statsHistory ?? [];
+globalForStats.todayMax = globalForStats.todayMax ?? 0;
+
 class StatsHistory {
-    private history: DailyStats[] = [];
-    private todayMax = 0; // 今日峰值
-
-    constructor() {
-        this.load();
+    private get history(): DailyStats[] {
+        return globalForStats.statsHistory;
     }
 
-    private load() {
-        try {
-            if (fs.existsSync(DATA_FILE)) {
-                const data = fs.readFileSync(DATA_FILE, 'utf-8');
-                this.history = JSON.parse(data);
-                // 清理超过7天的旧数据
-                this.cleanup();
-            }
-        } catch {
-            this.history = [];
-        }
-    }
-
-    private save() {
-        try {
-            const dir = path.dirname(DATA_FILE);
-            if (!fs.existsSync(dir)) {
-                fs.mkdirSync(dir, { recursive: true });
-            }
-            fs.writeFileSync(DATA_FILE, JSON.stringify(this.history, null, 2));
-        } catch (err) {
-            console.error('Failed to save stats history:', err);
-        }
+    private set history(value: DailyStats[]) {
+        globalForStats.statsHistory = value;
     }
 
     private cleanup() {
@@ -59,7 +40,7 @@ class StatsHistory {
         const today = this.getDateString(now);
 
         // 更新今日峰值
-        this.todayMax = Math.max(this.todayMax, count);
+        globalForStats.todayMax = Math.max(globalForStats.todayMax, count);
 
         // 查找今日记录
         const todayIndex = this.history.findIndex(item => item.date === today);
@@ -69,14 +50,12 @@ class StatsHistory {
             if (count > this.history[todayIndex].count) {
                 this.history[todayIndex].count = count;
                 this.history[todayIndex].timestamp = Date.now();
-                this.save();
             }
         } else {
             // 新的一天，重置今日峰值
-            this.todayMax = count;
+            globalForStats.todayMax = count;
             this.history.push({ date: today, count, timestamp: Date.now() });
             this.cleanup();
-            this.save();
         }
     }
 
@@ -90,8 +69,7 @@ class StatsHistory {
 
     clear() {
         this.history = [];
-        this.todayMax = 0;
-        this.save();
+        globalForStats.todayMax = 0;
     }
 }
 
