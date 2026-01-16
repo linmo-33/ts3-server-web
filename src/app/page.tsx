@@ -7,7 +7,8 @@ import { DownloadSection } from '@/components/sections/DownloadSection';
 import { StatsChart } from '@/components/sections/StatsChart';
 import { UserList } from '@/components/sections/UserList';
 import { Footer } from '@/components/sections/Footer';
-import { Gamepad2, Headphones, Star, Zap } from 'lucide-react';
+import { FloatingIcons } from '@/components/FloatingIcons';
+import { ParticleBackground } from '@/components/ParticleBackground';
 import { Users, Clock, Wifi, Signal } from 'lucide-react';
 
 export default function HomePage() {
@@ -18,21 +19,11 @@ export default function HomePage() {
       {/* Grid background */}
       <div className="absolute inset-0 theme-grid"></div>
 
-      {/* Floating decorative icons */}
-      <div className="hidden lg:block">
-        <div className="floating-icon floating-icon-coral" style={{ top: '15%', right: '8%' }}>
-          <Gamepad2 size={24} className="text-red-500" />
-        </div>
-        <div className="floating-icon floating-icon-yellow" style={{ top: '45%', right: '5%' }}>
-          <Star size={24} className="text-yellow-600" />
-        </div>
-        <div className="floating-icon floating-icon-green" style={{ top: '25%', left: '5%' }}>
-          <Headphones size={24} className="text-green-600" />
-        </div>
-        <div className="floating-icon floating-icon-blue" style={{ bottom: '20%', left: '8%' }}>
-          <Zap size={24} className="text-blue-500" />
-        </div>
-      </div>
+      {/* Particle background */}
+      <ParticleBackground />
+
+      {/* Floating decorative icons with parallax */}
+      <FloatingIcons />
 
       <div className="relative z-10 py-8 md:py-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto space-y-6">

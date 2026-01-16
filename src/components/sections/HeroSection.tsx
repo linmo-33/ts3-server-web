@@ -18,7 +18,7 @@ export const HeroSection: React.FC = () => {
   return (
     <section className="w-full">
       <div className="theme-card p-8">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+        <div className="flex flex-col lg:flex-row lg:items-center gap-8">
           {/* Left Content */}
           <div className="flex-1">
             <div
@@ -46,13 +46,13 @@ export const HeroSection: React.FC = () => {
 
             {/* Server Features */}
             <div className="flex flex-wrap gap-2 mb-6">
-              {['低延迟', '高音质', '全天候在线', '免费使用'].map((tag) => (
+              {["低延迟", "高音质", "全天候在线", "免费使用"].map((tag) => (
                 <span
                   key={tag}
                   className="px-3 py-1 text-xs font-bold rounded-full bg-white text-fresh-text"
                   style={{
-                    border: '2px solid #1F2937',
-                    boxShadow: '2px 2px 0px #1F2937',
+                    border: "2px solid #1F2937",
+                    boxShadow: "2px 2px 0px #1F2937",
                   }}
                 >
                   {tag}
@@ -60,11 +60,11 @@ export const HeroSection: React.FC = () => {
               ))}
             </div>
 
-            {/* Server Address */}
-            <div className="flex items-center gap-3">
+            {/* Server Address & Connect */}
+            <div className="flex flex-wrap items-center gap-3">
               <code
                 className="theme-input px-4 py-2.5 text-sm font-bold"
-                style={{ fontFamily: 'var(--font-fredoka), Fredoka, sans-serif' }}
+                style={{ fontFamily: "var(--font-fredoka), Fredoka, sans-serif" }}
               >
                 {SERVER_CONFIG.address}
               </code>
@@ -82,17 +82,32 @@ export const HeroSection: React.FC = () => {
                   <Copy size={18} />
                 )}
               </button>
+              <button
+                onClick={handleConnect}
+                className="theme-btn px-6 py-2.5 flex items-center justify-center gap-2"
+              >
+                Quick Connect
+                <ArrowRight size={18} />
+              </button>
             </div>
           </div>
 
-          {/* Connect Button */}
-          <button
-            onClick={handleConnect}
-            className="theme-btn px-8 py-4 flex items-center justify-center gap-2 text-lg"
-          >
-            Quck Connect
-            <ArrowRight size={20} />
-          </button>
+          {/* Right Illustration - 音波动画 */}
+          <div className="hidden lg:flex flex-col items-center justify-center">
+            <div className="relative w-48 h-32 flex items-center justify-center gap-1.5">
+              {/* 音波线条 */}
+              {[4, 6, 8, 10, 8, 10, 12, 10, 8, 6, 8, 6, 4].map((h, i) => (
+                <div
+                  key={i}
+                  className="w-2 rounded-full soundwave-bar"
+                  style={{
+                    height: `${h * 5}px`,
+                    animationDelay: `${i * 0.08}s`,
+                  }}
+                />
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </section>

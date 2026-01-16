@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <!-- Background -->
+  <rect width="32" height="32" rx="8" fill="#22C55E"/>
+  <!-- Border effect -->
+  <rect x="1" y="1" width="30" height="30" rx="7" fill="none" stroke="#1F2937" stroke-width="2"/>
+  <!-- Headphone shape -->
+  <path d="M8 18C8 13.5817 11.5817 10 16 10C20.4183 10 24 13.5817 24 18" stroke="white" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+  <!-- Left ear -->
+  <rect x="6" y="16" width="4" height="7" rx="2" fill="white"/>
+  <!-- Right ear -->
+  <rect x="22" y="16" width="4" height="7" rx="2" fill="white"/>
+  <!-- Mic -->
+  <path d="M16 23V26" stroke="white" stroke-width="2" stroke-linecap="round"/>
+  <circle cx="16" cy="27" r="1.5" fill="white"/>
+</svg>

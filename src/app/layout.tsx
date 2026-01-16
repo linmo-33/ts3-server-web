@@ -17,8 +17,8 @@ const notoSansSC = Noto_Sans_SC({
 });
 
 export const metadata: Metadata = {
-  title: 'TeamSpeak Server Hub',
-  description: '欢迎来到我们的游戏语音社区，与队友实时沟通。',
+  title: process.env.NEXT_PUBLIC_SERVER_NAME || 'TeamSpeak Server Hub',
+  description: process.env.NEXT_PUBLIC_SERVER_DESCRIPTION || '欢迎来到我们的游戏语音社区，与队友实时沟通。',
 };
 
 export default function RootLayout({

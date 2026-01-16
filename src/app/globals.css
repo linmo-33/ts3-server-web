@@ -236,36 +236,187 @@ html {
   border: 2px solid #1F2937;
   box-shadow: 3px 3px 0px #1F2937;
   z-index: 10;
+  transition: transform 0.15s ease-out;
+}
+
+/* 光晕效果 */
+.floating-icon::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border-radius: 18px;
+  background: inherit;
+  opacity: 0.4;
+  filter: blur(8px);
+  animation: glow-pulse 3s ease-in-out infinite;
+  z-index: -1;
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.1);
+  }
 }
 
 .floating-icon-coral {
   background: #FECACA;
-  animation: float-1 3s ease-in-out infinite;
+  animation: float-right-1 6s ease-in-out infinite;
 }
 
 .floating-icon-yellow {
   background: #FEF08A;
-  animation: float-2 3.5s ease-in-out infinite;
+  animation: float-right-2 7s ease-in-out infinite;
+}
+
+.floating-icon-purple {
+  background: #E9D5FF;
+  animation: float-right-3 5.5s ease-in-out infinite;
+}
+
+.floating-icon-pink {
+  background: #FBCFE8;
+  animation: float-right-4 6.8s ease-in-out infinite;
 }
 
 .floating-icon-blue {
   background: #DBEAFE;
-  animation: float-1 4s ease-in-out infinite;
+  animation: float-left-1 5s ease-in-out infinite;
 }
 
 .floating-icon-green {
   background: #DCFCE7;
-  animation: float-2 3s ease-in-out infinite;
+  animation: float-left-2 6.5s ease-in-out infinite;
 }
 
-@keyframes float-1 {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-10px) rotate(5deg); }
+.floating-icon-orange {
+  background: #FED7AA;
+  animation: float-left-3 5.8s ease-in-out infinite;
 }
 
-@keyframes float-2 {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-8px) rotate(-5deg); }
+.floating-icon-cyan {
+  background: #CFFAFE;
+  animation: float-left-4 7.2s ease-in-out infinite;
+}
+
+/* 右侧图标 - 向左右自由漂浮 */
+@keyframes float-right-1 {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate(-15px, -12px) rotate(8deg);
+  }
+  50% {
+    transform: translate(10px, -20px) rotate(-5deg);
+  }
+  75% {
+    transform: translate(-8px, -8px) rotate(3deg);
+  }
+}
+
+@keyframes float-right-2 {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  20% {
+    transform: translate(12px, -15px) rotate(-6deg);
+  }
+  40% {
+    transform: translate(-10px, -25px) rotate(10deg);
+  }
+  60% {
+    transform: translate(8px, -10px) rotate(-3deg);
+  }
+  80% {
+    transform: translate(-5px, -18px) rotate(5deg);
+  }
+}
+
+@keyframes float-right-3 {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  30% {
+    transform: translate(-18px, -8px) rotate(6deg);
+  }
+  60% {
+    transform: translate(8px, -16px) rotate(-8deg);
+  }
+}
+
+@keyframes float-right-4 {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate(10px, -14px) rotate(-5deg);
+  }
+  50% {
+    transform: translate(-12px, -20px) rotate(7deg);
+  }
+  75% {
+    transform: translate(6px, -8px) rotate(-3deg);
+  }
+}
+
+/* 左侧图标 - 向左右自由漂浮 */
+@keyframes float-left-1 {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  25% {
+    transform: translate(15px, -10px) rotate(-8deg);
+  }
+  50% {
+    transform: translate(-8px, -22px) rotate(6deg);
+  }
+  75% {
+    transform: translate(12px, -6px) rotate(-4deg);
+  }
+}
+
+@keyframes float-left-2 {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  33% {
+    transform: translate(-12px, -18px) rotate(10deg);
+  }
+  66% {
+    transform: translate(10px, -12px) rotate(-7deg);
+  }
+}
+
+@keyframes float-left-3 {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  20% {
+    transform: translate(18px, -6px) rotate(-6deg);
+  }
+  50% {
+    transform: translate(-6px, -18px) rotate(8deg);
+  }
+  80% {
+    transform: translate(10px, -10px) rotate(-4deg);
+  }
+}
+
+@keyframes float-left-4 {
+  0%, 100% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  30% {
+    transform: translate(-14px, -12px) rotate(5deg);
+  }
+  70% {
+    transform: translate(12px, -16px) rotate(-6deg);
+  }
 }
 
 /* ========================================
@@ -368,4 +519,67 @@ html {
 .user-item:hover {
   background: #F0FDF4;
   border-color: #22C55E;
+}
+
+/* ========================================
+   PARTICLE BACKGROUND
+   ======================================== */
+
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  opacity: 0;
+  animation: particle-float linear infinite;
+}
+
+.particle-dot {
+  background: linear-gradient(135deg, #22C55E 0%, #16A34A 100%);
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.4);
+}
+
+.particle-star {
+  background: linear-gradient(135deg, #FBBF24 0%, #F59E0B 100%);
+  box-shadow: 0 0 8px rgba(251, 191, 36, 0.5);
+}
+
+@keyframes particle-float {
+  0% {
+    opacity: 0;
+    transform: translateY(0) translateX(0) scale(0.5);
+  }
+  10% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 0.8;
+    transform: translateY(-50vh) translateX(20px) scale(1);
+  }
+  90% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-100vh) translateX(-10px) scale(0.3);
+  }
+}
+
+/* ========================================
+   SOUNDWAVE ANIMATION
+   ======================================== */
+
+.soundwave-bar {
+  background: linear-gradient(180deg, #22C55E 0%, #16A34A 100%);
+  border-radius: 9999px;
+  animation: soundwave 1.2s ease-in-out infinite;
+}
+
+@keyframes soundwave {
+  0%, 100% {
+    transform: scaleY(0.4);
+    opacity: 0.6;
+  }
+  50% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
 }
