@@ -1,66 +1,51 @@
 import React from 'react';
-import { Zap, Sun, Moon, Users } from 'lucide-react';
+import { Zap, Users } from 'lucide-react';
 import { SERVER_CONFIG } from '@/constants/server';
 
 interface HeaderProps {
   loading: boolean;
   onlineCount: number;
   serverOnline: boolean;
-  isDark: boolean;
-  onToggleTheme: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   loading,
   onlineCount,
   serverOnline,
-  isDark,
-  onToggleTheme,
 }) => {
   return (
     <header className="flex items-center justify-between">
       <div className="flex items-center gap-4">
         {/* Server Avatar */}
-        <div className={`w-12 h-12 rounded-xl flex items-center justify-center shadow-lg theme-border-animated ${
-          isDark
-            ? 'bg-gradient-to-br from-cyber-cyan to-cyber-purple text-cyber-bg shadow-cyber-cyan/30'
-            : 'bg-gradient-to-br from-cream-primary to-cream-secondary text-white shadow-cream-primary/30'
-        }`}>
+        <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-fresh-primary border-3 border-fresh-text text-white"
+             style={{ border: '3px solid #1F2937', boxShadow: '4px 4px 0px #1F2937' }}>
           <Zap size={24} />
         </div>
 
         {/* Server Info */}
         <div>
-          <h1 className={`text-xl font-bold tracking-tight neon-text ${isDark ? 'text-white' : 'text-cream-text'}`}>
+          <h1 className="text-xl font-bold tracking-tight text-fresh-text">
             {SERVER_CONFIG.name}
           </h1>
-          <p className={`text-sm ${isDark ? 'text-cyber-text-muted' : 'text-cream-text-muted'}`}>
+          <p className="text-sm text-fresh-text-muted">
             {SERVER_CONFIG.description}
           </p>
         </div>
       </div>
 
-      {/* Right Side: Status + Theme Toggle */}
+      {/* Right Side: Status */}
       <div className="flex items-center gap-3">
         {/* 在线状态 */}
-        <div className={`flex items-center rounded-full overflow-hidden ${
-          isDark
-            ? 'bg-cyber-card/60 border border-cyber-border'
-            : 'bg-white border border-cream-border shadow-sm'
-        }`}>
+        <div className="status-pill flex items-center">
           {/* 左侧：状态 */}
-          <div className={`flex items-center gap-1.5 px-3 py-1.5 ${
-            isDark ? 'border-r border-cyber-border' : 'border-r border-cream-border'
-          }`}>
-            <span className={`w-2 h-2 rounded-full ${
-              serverOnline
-                ? (isDark ? 'bg-cyber-success' : 'bg-cream-success')
-                : (isDark ? 'bg-cyber-error' : 'bg-cream-error')
-            }`}></span>
-            <span className={`text-sm font-medium ${
-              serverOnline
-                ? (isDark ? 'text-cyber-success' : 'text-cream-success')
-                : (isDark ? 'text-cyber-error' : 'text-cream-error')
+          <div className="flex items-center gap-1.5 px-3 py-1.5 border-r-2 border-fresh-text">
+            <span className="decoration-dot" style={{
+              background: serverOnline ? '#22C55E' : '#EF4444',
+              width: '8px',
+              height: '8px'
+            }}></span>
+            <span className={`text-sm font-bold ${
+              serverOnline ? 'text-fresh-success' : 'text-fresh-error'
             }`}>
               {serverOnline ? 'Online' : 'Offline'}
             </span>
@@ -69,29 +54,16 @@ export const Header: React.FC<HeaderProps> = ({
           {/* 右侧：人数 */}
           {serverOnline && (
             <div className="flex items-center gap-1.5 px-3 py-1.5">
-              <Users size={14} className={isDark ? 'text-cyber-cyan' : 'text-cream-primary'} />
-              <span className={`text-sm font-bold tabular-nums ${isDark ? 'text-white' : 'text-cream-text'}`}>
+              <Users size={14} className="text-fresh-primary" />
+              <span className="text-sm font-bold tabular-nums text-fresh-text">
                 {loading ? '-' : onlineCount}
               </span>
-              <span className={`text-sm ${isDark ? 'text-cyber-text-muted' : 'text-cream-text-muted'}`}>
+              <span className="text-sm text-fresh-text-muted">
                 在线
               </span>
             </div>
           )}
         </div>
-
-        {/* Theme Toggle */}
-        <button
-          onClick={onToggleTheme}
-          className={`p-2 rounded-full transition-all duration-200 ${
-            isDark
-              ? 'bg-cyber-cyan/10 text-cyber-cyan hover:bg-cyber-cyan/20'
-              : 'bg-cream-primary/10 text-cream-primary hover:bg-cream-primary/20'
-          }`}
-          title={isDark ? '切换到浅色模式' : '切换到深色模式'}
-        >
-          {isDark ? <Sun size={18} /> : <Moon size={18} />}
-        </button>
       </div>
     </header>
   );

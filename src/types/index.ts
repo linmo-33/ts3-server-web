@@ -9,7 +9,6 @@ export interface ServerConfig {
   name: string;
   description: string;
   address: string;
-  queryPort: number;
 }
 
 /** 用户信息 */

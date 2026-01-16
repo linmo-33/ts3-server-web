@@ -2,263 +2,370 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ========================================
+   FRESH GREEN THEME - True Claymorphism
+   ======================================== */
+
+/* Typography Optimization */
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern" 1, "liga" 1;
+}
+
 body {
-  transition: background-color 0.3s ease, color 0.3s ease;
+  background-color: #FDF8F3;
+  color: #1F2937;
+  line-height: 1.6;
+  letter-spacing: 0.01em;
 }
 
-/* ========================================
-   DARK THEME (Cyberpunk) - Default
-   ======================================== */
-
-/* Dark Scrollbar */
-.dark ::-webkit-scrollbar {
-  width: 6px;
+/* Headings Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 900;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
 }
 
-.dark ::-webkit-scrollbar-track {
-  background: rgba(13, 13, 26, 0.8);
-  border-radius: 3px;
+h1 { font-size: 2.5rem; }
+h2 { font-size: 2rem; }
+h3 { font-size: 1.5rem; }
+h4 { font-size: 1.25rem; }
+
+/* Better text selection */
+::selection {
+  background: #22C55E;
+  color: #FFFFFF;
 }
 
-.dark ::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #00F5FF 0%, #BF00FF 100%);
-  border-radius: 3px;
+/* Paragraph optimization */
+p {
+  line-height: 1.7;
 }
 
-.dark ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #00F5FF 0%, #FF00AA 100%);
+/* Small text */
+.text-sm {
+  letter-spacing: 0.02em;
 }
 
-/* Dark Card */
-.dark .theme-card {
-  background: linear-gradient(135deg, rgba(20, 20, 40, 0.9) 0%, rgba(13, 13, 26, 0.95) 100%);
-  border: 1px solid rgba(0, 245, 255, 0.1);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(10px);
+/* Bold text enhancement */
+strong, b, .font-bold, .font-black {
+  font-weight: 700;
 }
 
-.dark .theme-card:hover {
-  border-color: rgba(0, 245, 255, 0.3);
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5), 0 0 30px rgba(0, 245, 255, 0.1);
+.font-black {
+  font-weight: 900;
 }
 
-/* Dark Button */
-.dark .theme-btn {
-  background: linear-gradient(135deg, #00F5FF 0%, #BF00FF 100%);
-  box-shadow: 0 4px 20px rgba(0, 245, 255, 0.4), 0 0 60px rgba(191, 0, 255, 0.2);
-  color: #0D0D1A;
-}
-
-.dark .theme-btn:hover {
-  filter: brightness(1.1);
-  box-shadow: 0 6px 30px rgba(0, 245, 255, 0.5), 0 0 80px rgba(191, 0, 255, 0.3);
-  transform: translateY(-2px);
-}
-
-/* Dark Gradient Text */
-.dark .gradient-text {
-  background: linear-gradient(90deg, #00F5FF 0%, #BF00FF 50%, #FF00AA 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Dark Grid */
-.dark .theme-grid {
-  background-image:
-    linear-gradient(rgba(0, 245, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 245, 255, 0.03) 1px, transparent 1px);
-  background-size: 50px 50px;
-}
-
-/* Dark Neon Text */
-.dark .neon-text {
-  text-shadow: 0 0 10px rgba(0, 245, 255, 0.5), 0 0 20px rgba(0, 245, 255, 0.3);
-}
-
-/* ========================================
-   LIGHT THEME (Cream)
-   ======================================== */
-
-/* Light Scrollbar */
+/* Scrollbar - Hidden */
 ::-webkit-scrollbar {
-  width: 6px;
+  display: none;
 }
 
-::-webkit-scrollbar-track {
-  background: rgba(255, 248, 240, 0.8);
-  border-radius: 3px;
+html {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
 }
 
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(180deg, #FF8A65 0%, #B39DDB 100%);
-  border-radius: 3px;
-}
+/* ========================================
+   CLAYMORPHISM CARDS - Solid Border Style
+   ======================================== */
 
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(180deg, #FF7043 0%, #9575CD 100%);
-}
-
-/* Light Card */
 .theme-card {
   background: #FFFFFF;
-  border: 1px solid rgba(93, 78, 55, 0.1);
-  box-shadow: 0 4px 20px rgba(93, 78, 55, 0.08);
-  transition: all 0.3s ease;
+  border: 3px solid #1F2937;
+  border-radius: 1.5rem;
+  box-shadow: 6px 6px 0px #1F2937;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .theme-card:hover {
-  border-color: rgba(255, 138, 101, 0.3);
-  box-shadow: 0 8px 30px rgba(93, 78, 55, 0.12);
+  transform: translate(-2px, -2px);
+  box-shadow: 8px 8px 0px #1F2937;
 }
 
-/* Light Button */
+/* ========================================
+   CLAYMORPHISM BUTTONS
+   ======================================== */
+
 .theme-btn {
-  background: linear-gradient(135deg, #FF8A65 0%, #B39DDB 100%);
-  box-shadow: 0 4px 20px rgba(255, 138, 101, 0.25);
+  background: #22C55E;
+  border: 3px solid #1F2937;
+  border-radius: 9999px;
+  box-shadow: 4px 4px 0px #1F2937;
   color: #FFFFFF;
-  transition: all 0.3s ease;
+  font-weight: 700;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
 }
 
-.theme-btn::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  transition: left 0.5s ease;
-}
-
 .theme-btn:hover {
-  filter: brightness(1.05);
-  box-shadow: 0 6px 25px rgba(255, 138, 101, 0.35);
-  transform: translateY(-2px);
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px #1F2937;
 }
 
-.theme-btn:hover::before {
-  left: 100%;
+.theme-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px #1F2937;
 }
 
-/* Light Gradient Text */
-.gradient-text {
-  background: linear-gradient(90deg, #FF8A65 0%, #B39DDB 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Light Grid (subtle dots) */
-.theme-grid {
-  background-image: radial-gradient(rgba(93, 78, 55, 0.03) 1px, transparent 1px);
-  background-size: 20px 20px;
-}
-
-/* Light Text Glow (subtle) */
-.neon-text {
-  text-shadow: none;
-}
-
-/* ========================================
-   SHARED STYLES
-   ======================================== */
-
-/* Theme transition */
-.theme-card,
-.theme-btn,
-.gradient-text {
-  transition: all 0.3s ease;
-}
-
-/* Animated border - works in both themes */
-.theme-border-animated {
-  position: relative;
-}
-
-.dark .theme-border-animated::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1px;
-  background: linear-gradient(135deg, #00F5FF, #BF00FF, #FF00AA, #00F5FF);
-  background-size: 300% 300%;
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  animation: gradient-rotate 4s linear infinite;
-  pointer-events: none;
-}
-
-.theme-border-animated::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  padding: 1px;
-  background: linear-gradient(135deg, #FF8A65, #B39DDB, #FF8A65);
-  background-size: 200% 200%;
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  animation: gradient-rotate 4s linear infinite;
-  pointer-events: none;
-}
-
-@keyframes gradient-rotate {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
-}
-
-/* Pulse animation */
-.pulse-indicator {
-  animation: pulse-indicator 2s ease-in-out infinite;
-}
-
-.dark .pulse-indicator {
-  --pulse-color: rgba(0, 255, 159, 0.4);
-}
-
-.pulse-indicator {
-  --pulse-color: rgba(129, 199, 132, 0.4);
-}
-
-@keyframes pulse-indicator {
-  0%, 100% { box-shadow: 0 0 0 0 var(--pulse-color); }
-  50% { box-shadow: 0 0 0 8px transparent; }
-}
-
-/* Secondary button */
+/* Secondary Button */
 .theme-btn-secondary {
-  transition: all 0.3s ease;
-}
-
-.dark .theme-btn-secondary {
-  background: rgba(0, 245, 255, 0.1);
-  border: 1px solid rgba(0, 245, 255, 0.3);
-  color: #00F5FF;
-}
-
-.dark .theme-btn-secondary:hover {
-  background: rgba(0, 245, 255, 0.2);
-  border-color: rgba(0, 245, 255, 0.5);
-}
-
-.theme-btn-secondary {
-  background: rgba(255, 138, 101, 0.1);
-  border: 1px solid rgba(255, 138, 101, 0.3);
-  color: #FF8A65;
+  background: #FFFFFF;
+  border: 3px solid #1F2937;
+  border-radius: 9999px;
+  box-shadow: 4px 4px 0px #1F2937;
+  color: #1F2937;
+  font-weight: 700;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .theme-btn-secondary:hover {
-  background: rgba(255, 138, 101, 0.2);
-  border-color: rgba(255, 138, 101, 0.5);
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px #1F2937;
+  background: #F9FAFB;
+}
+
+.theme-btn-secondary:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px #1F2937;
+}
+
+/* Accent Button */
+.theme-btn-accent {
+  background: #F87171;
+  border: 3px solid #1F2937;
+  border-radius: 9999px;
+  box-shadow: 4px 4px 0px #1F2937;
+  color: #FFFFFF;
+  font-weight: 700;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.theme-btn-accent:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px #1F2937;
+}
+
+/* ========================================
+   GRADIENT TEXT
+   ======================================== */
+
+.gradient-text {
+  color: #22C55E;
+  font-style: italic;
+}
+
+/* ========================================
+   CLAYMORPHISM BADGE
+   ======================================== */
+
+.theme-badge {
+  background: #FFFFFF;
+  border: 2px solid #1F2937;
+  border-radius: 9999px;
+  color: #1F2937;
+  font-weight: 600;
+  box-shadow: 3px 3px 0px #1F2937;
+}
+
+.theme-badge-green {
+  background: #DCFCE7;
+  border: 2px solid #1F2937;
+  color: #166534;
+}
+
+/* ========================================
+   STAT CARDS
+   ======================================== */
+
+.stat-card {
+  background: #FFFFFF;
+  border: 2px solid #1F2937;
+  border-radius: 1rem;
+  box-shadow: 4px 4px 0px #1F2937;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stat-card:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 5px 5px 0px #1F2937;
+}
+
+/* ========================================
+   STATUS PILL
+   ======================================== */
+
+.status-pill {
+  background: #FFFFFF;
+  border: 2px solid #1F2937;
+  border-radius: 9999px;
+  box-shadow: 3px 3px 0px #1F2937;
+  overflow: hidden;
+}
+
+/* ========================================
+   INPUT/CODE STYLES
+   ======================================== */
+
+.theme-input {
+  background: #FFFFFF;
+  border: 2px solid #1F2937;
+  border-radius: 0.75rem;
+  box-shadow: 3px 3px 0px #1F2937;
+  color: #1F2937;
+  font-family: ui-monospace, monospace;
+}
+
+/* ========================================
+   FLOATING DECORATIVE ICONS
+   ======================================== */
+
+.floating-icon {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #1F2937;
+  box-shadow: 3px 3px 0px #1F2937;
+  z-index: 10;
+}
+
+.floating-icon-coral {
+  background: #FECACA;
+  animation: float-1 3s ease-in-out infinite;
+}
+
+.floating-icon-yellow {
+  background: #FEF08A;
+  animation: float-2 3.5s ease-in-out infinite;
+}
+
+.floating-icon-blue {
+  background: #DBEAFE;
+  animation: float-1 4s ease-in-out infinite;
+}
+
+.floating-icon-green {
+  background: #DCFCE7;
+  animation: float-2 3s ease-in-out infinite;
+}
+
+@keyframes float-1 {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(5deg); }
+}
+
+@keyframes float-2 {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-8px) rotate(-5deg); }
+}
+
+/* ========================================
+   PROGRESS BAR
+   ======================================== */
+
+.progress-bar {
+  background: #E5E7EB;
+  border-radius: 9999px;
+  height: 10px;
+  overflow: hidden;
+  border: 2px solid #1F2937;
+}
+
+.progress-bar-fill {
+  background: #22C55E;
+  height: 100%;
+  border-radius: 9999px;
+}
+
+/* ========================================
+   AVATAR STYLES
+   ======================================== */
+
+.avatar-gradient-1 { background: #22C55E; }
+.avatar-gradient-2 { background: #16A34A; }
+.avatar-gradient-3 { background: #F87171; }
+.avatar-gradient-4 { background: #FBBF24; }
+.avatar-gradient-5 { background: #60A5FA; }
+
+/* ========================================
+   GRID PATTERN
+   ======================================== */
+
+.theme-grid {
+  background-image: radial-gradient(rgba(31, 41, 55, 0.04) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* ========================================
+   SPINNER
+   ======================================== */
+
+.theme-spinner {
+  border: 3px solid #E5E7EB;
+  border-top-color: #22C55E;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ========================================
+   DECORATIVE DOT
+   ======================================== */
+
+.decoration-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #22C55E;
+  border: 2px solid #1F2937;
+  animation: pulse-dot 2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+/* ========================================
+   DOWNLOAD ITEM
+   ======================================== */
+
+.download-item {
+  background: #FFFFFF;
+  border: 2px solid #1F2937;
+  border-radius: 1rem;
+  box-shadow: 4px 4px 0px #1F2937;
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.download-item:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px #1F2937;
+}
+
+/* ========================================
+   USER LIST ITEM
+   ======================================== */
+
+.user-item {
+  border-radius: 0.75rem;
+  border: 2px solid transparent;
+  transition: all 0.15s ease;
+}
+
+.user-item:hover {
+  background: #F0FDF4;
+  border-color: #22C55E;
 }

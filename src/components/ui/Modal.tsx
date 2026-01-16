@@ -1,49 +1,38 @@
-import React from 'react';
-import { X } from 'lucide-react';
+import React from "react";
+import { X } from "lucide-react";
 
 export interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
   children?: React.ReactNode;
-  isDark?: boolean;
 }
 
-export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children, isDark = true }) => {
+export const Modal: React.FC<ModalProps> = ({
+  isOpen,
+  onClose,
+  title,
+  children,
+}) => {
   if (!isOpen) return null;
 
   return (
-    <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-md animate-in fade-in duration-200 ${
-      isDark ? 'bg-cyber-bg/80' : 'bg-cream-bg/80'
-    }`}>
-      <div className={`theme-card rounded-2xl w-full max-w-lg shadow-2xl p-6 relative animate-in zoom-in-95 duration-200 ${
-        isDark ? 'shadow-cyber-cyan/10' : 'shadow-cream-primary/10'
-      }`}>
-        {/* Decorative top border */}
-        <div className={`absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent to-transparent ${
-          isDark ? 'via-cyber-cyan/50' : 'via-cream-primary/50'
-        }`}></div>
-
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-fresh-text/20 backdrop-blur-sm">
+      <div className="theme-card w-full max-w-lg max-h-[90vh] p-6 relative flex flex-col">
         <button
           onClick={onClose}
-          className={`absolute top-4 right-4 transition-colors ${
-            isDark ? 'text-cyber-text-muted hover:text-cyber-cyan' : 'text-cream-text-muted hover:text-cream-primary'
-          }`}
+          className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-lg transition-all text-fresh-text-muted hover:text-fresh-text hover:bg-fresh-text/5"
+          style={{ border: "2px solid #1F2937" }}
         >
-          <X size={20} />
+          <X size={18} />
         </button>
 
-        <h3 className={`text-xl font-bold mb-4 gradient-text`}>{title}</h3>
+        <h3 className="text-xl font-black mb-4 text-fresh-text">{title}</h3>
 
-        <div className="max-h-[60vh] overflow-y-auto pr-2">
-          {children}
-        </div>
+        <div className="flex-1 overflow-y-auto pr-2">{children}</div>
 
-        <div className="mt-6 flex justify-end">
-          <button
-            onClick={onClose}
-            className="theme-btn font-medium rounded-xl px-5 py-2.5"
-          >
+        <div className="mt-6 flex justify-end flex-shrink-0">
+          <button onClick={onClose} className="theme-btn px-6 py-2.5">
             知道了
           </button>
         </div>

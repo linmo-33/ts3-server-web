@@ -1,12 +1,8 @@
 import React from "react";
-import { Zap, Copy, Check } from "lucide-react";
+import { Copy, Check, ArrowRight } from "lucide-react";
 import { SERVER_CONFIG } from "@/constants/server";
 
-interface HeroSectionProps {
-  isDark: boolean;
-}
-
-export const HeroSection: React.FC<HeroSectionProps> = ({ isDark }) => {
+export const HeroSection: React.FC = () => {
   const [copied, setCopied] = React.useState(false);
 
   const handleConnect = () => {
@@ -20,69 +16,70 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isDark }) => {
   };
 
   return (
-    <div className="lg:col-span-2">
-      <div className="theme-card rounded-xl p-6 h-full">
+    <section className="w-full">
+      <div className="theme-card p-8">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
           {/* Left Content */}
           <div className="flex-1">
             <div
-              className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium mb-4 ${
-                isDark
-                  ? "bg-cyber-cyan/10 border border-cyber-cyan/30 text-cyber-cyan"
-                  : "bg-cream-primary/10 border border-cream-primary/30 text-cream-primary"
-              }`}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 mb-4 theme-badge-green"
+              style={{
+                border: "2px solid #1F2937",
+                boxShadow: "2px 2px 0px #1F2937",
+              }}
             >
-              <Zap size={12} className="animate-pulse" />
-              开黑集结
+              <span
+                className="decoration-dot"
+                style={{ width: "6px", height: "6px", border: "none" }}
+              ></span>
+              <span className="text-xs font-bold">开黑集结</span>
             </div>
 
-            <h2
-              className={`text-2xl md:text-3xl font-bold mb-2 ${
-                isDark ? "text-white" : "text-cream-text"
-              }`}
-            >
-              频道在线，
-              <span className="gradient-text">信号畅通</span>
+            <h2 className="text-3xl md:text-4xl font-black mb-3 text-fresh-text leading-tight">
+              黑夜降临，
+              <span className="gradient-text">该你登场了!</span>
             </h2>
 
-            <p
-              className={`text-sm mb-5 ${
-                isDark
-                  ? "text-cyber-text-secondary"
-                  : "text-cream-text-secondary"
-              }`}
-            >
+            <p className="text-base mb-6 text-fresh-text-secondary">
               加入我们的语音服务器，与队友实时沟通
             </p>
 
+            {/* Server Features */}
+            <div className="flex flex-wrap gap-2 mb-6">
+              {['低延迟', '高音质', '全天候在线', '免费使用'].map((tag) => (
+                <span
+                  key={tag}
+                  className="px-3 py-1 text-xs font-bold rounded-full bg-white text-fresh-text"
+                  style={{
+                    border: '2px solid #1F2937',
+                    boxShadow: '2px 2px 0px #1F2937',
+                  }}
+                >
+                  {tag}
+                </span>
+              ))}
+            </div>
+
             {/* Server Address */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               <code
-                className={`px-4 py-2 rounded-lg font-mono text-sm backdrop-blur-sm ${
-                  isDark
-                    ? "bg-cyber-bg-deep/60 border border-cyber-border text-cyber-cyan"
-                    : "bg-cream-bg-deep border border-cream-border text-cream-primary"
-                }`}
+                className="theme-input px-4 py-2.5 text-sm font-bold"
+                style={{ fontFamily: 'var(--font-fredoka), Fredoka, sans-serif' }}
               >
                 {SERVER_CONFIG.address}
               </code>
               <button
                 onClick={handleCopy}
-                className={`p-2 rounded-lg transition-all duration-200 border border-transparent ${
-                  isDark
-                    ? "hover:bg-cyber-cyan/10 text-cyber-text-muted hover:text-cyber-cyan hover:border-cyber-cyan/30"
-                    : "hover:bg-cream-primary/10 text-cream-text-muted hover:text-cream-primary hover:border-cream-primary/30"
-                }`}
+                className="p-2.5 rounded-lg transition-all duration-150 bg-white text-fresh-text-muted hover:text-fresh-primary"
+                style={{
+                  border: "2px solid #1F2937",
+                  boxShadow: "2px 2px 0px #1F2937",
+                }}
               >
                 {copied ? (
-                  <Check
-                    size={16}
-                    className={
-                      isDark ? "text-cyber-success" : "text-cream-success"
-                    }
-                  />
+                  <Check size={18} className="text-fresh-success" />
                 ) : (
-                  <Copy size={16} />
+                  <Copy size={18} />
                 )}
               </button>
             </div>
@@ -91,13 +88,13 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ isDark }) => {
           {/* Connect Button */}
           <button
             onClick={handleConnect}
-            className="theme-btn font-bold rounded-xl px-6 py-3 flex items-center justify-center gap-2"
+            className="theme-btn px-8 py-4 flex items-center justify-center gap-2 text-lg"
           >
-            <Zap size={18} />
-            一键连接
+            Quck Connect
+            <ArrowRight size={20} />
           </button>
         </div>
       </div>
-    </div>
+    </section>
   );
 };

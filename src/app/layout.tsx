@@ -1,16 +1,24 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Fredoka, Noto_Sans_SC } from 'next/font/google';
 import './globals.css';
 
-const inter = Inter({
-  variable: '--font-inter',
+const fredoka = Fredoka({
+  variable: '--font-fredoka',
   subsets: ['latin'],
+  weight: ['300', '400', '500', '600', '700'],
+  display: 'swap',
+});
+
+const notoSansSC = Noto_Sans_SC({
+  variable: '--font-noto-sc',
+  subsets: ['latin'],
+  weight: ['400', '500', '700'],
   display: 'swap',
 });
 
 export const metadata: Metadata = {
   title: 'TeamSpeak Server Hub',
-  description: '黑暗降临，该你登场了。欢迎来到我们的游戏语音社区。',
+  description: '欢迎来到我们的游戏语音社区，与队友实时沟通。',
 };
 
 export default function RootLayout({
@@ -19,8 +27,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="zh-CN" suppressHydrationWarning className={inter.variable}>
-      <body className="bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300 font-sans">
+    <html lang="zh-CN">
+      <body className={`${fredoka.className} ${fredoka.variable} ${notoSansSC.variable} bg-fresh-bg text-fresh-text antialiased`}>
         {children}
       </body>
     </html>

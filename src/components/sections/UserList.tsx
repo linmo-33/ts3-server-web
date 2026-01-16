@@ -1,106 +1,150 @@
 import React from 'react';
-import { Mic, MicOff, Coffee, Gamepad2, Hash } from 'lucide-react';
-import type { User, ServerStats } from '@/types';
+import { Mic, MicOff, Coffee, Gamepad2, Hash, Users } from 'lucide-react';
+import type { User } from '@/types';
 
 interface UserListProps {
   loading: boolean;
   users: User[];
-  stats: ServerStats;
-  isDark: boolean;
 }
 
-const StatusIcon: React.FC<{ status: string; isDark: boolean }> = ({ status, isDark }) => {
+const StatusIcon: React.FC<{ status: string }> = ({ status }) => {
   switch (status) {
     case 'away':
-      return <Coffee size={12} className={isDark ? 'text-cyber-warning' : 'text-cream-warning'} />;
+      return <Coffee size={14} className="text-yellow-500" />;
     case 'mic-muted':
-      return <MicOff size={12} className={isDark ? 'text-cyber-text-muted' : 'text-cream-text-muted'} />;
+      return <MicOff size={14} className="text-fresh-text-muted" />;
     default:
-      return <Mic size={12} className={isDark ? 'text-cyber-success' : 'text-cream-success'} />;
+      return <Mic size={14} className="text-fresh-primary" />;
   }
 };
 
-const darkAvatarColors = [
-  'from-cyber-cyan to-cyber-purple',
-  'from-cyber-purple to-cyber-pink',
-  'from-cyber-pink to-cyber-cyan',
-  'from-cyber-cyan to-cyber-success',
-  'from-cyber-purple to-cyber-cyan',
+// Claymorphism style avatars - Minimal cute style
+const avatarStyles = [
+  { bg: '#DCFCE7', face: '#166534' },  // green
+  { bg: '#DBEAFE', face: '#1E40AF' },  // blue
+  { bg: '#FEF3C7', face: '#B45309' },  // yellow
+  { bg: '#FCE7F3', face: '#BE185D' },  // pink
+  { bg: '#F3E8FF', face: '#7E22CE' },  // purple
 ];
 
-const lightAvatarColors = [
-  'from-cream-primary to-cream-secondary',
-  'from-cream-secondary to-cream-primary-light',
-  'from-cream-primary-light to-cream-secondary-light',
-  'from-cream-primary to-cream-success',
-  'from-cream-secondary to-cream-primary',
-];
+// Simple blob with face
+const BlobAvatar: React.FC<{ bg: string; face: string; variant: number }> = ({ bg, face, variant }) => {
+  // Different eye styles
+  const eyes = [
+    // Happy dots
+    <>
+      <circle cx="11" cy="14" r="2" fill={face} />
+      <circle cx="21" cy="14" r="2" fill={face} />
+    </>,
+    // Sleepy lines
+    <>
+      <path d="M9 14 L13 14" stroke={face} strokeWidth="2" strokeLinecap="round" />
+      <path d="M19 14 L23 14" stroke={face} strokeWidth="2" strokeLinecap="round" />
+    </>,
+    // Wink
+    <>
+      <circle cx="11" cy="14" r="2" fill={face} />
+      <path d="M19 12 L23 16" stroke={face} strokeWidth="2" strokeLinecap="round" />
+    </>,
+    // Big eyes
+    <>
+      <circle cx="11" cy="14" r="3" fill="white" stroke={face} strokeWidth="1.5" />
+      <circle cx="21" cy="14" r="3" fill="white" stroke={face} strokeWidth="1.5" />
+      <circle cx="12" cy="14" r="1.5" fill={face} />
+      <circle cx="22" cy="14" r="1.5" fill={face} />
+    </>,
+    // Star eyes
+    <>
+      <polygon points="11,11 12,14 15,14 12.5,16 13.5,19 11,17 8.5,19 9.5,16 7,14 10,14" fill={face} transform="scale(0.6) translate(6, 6)" />
+      <polygon points="11,11 12,14 15,14 12.5,16 13.5,19 11,17 8.5,19 9.5,16 7,14 10,14" fill={face} transform="scale(0.6) translate(23, 6)" />
+    </>,
+  ];
 
-export const UserList: React.FC<UserListProps> = ({ loading, users, stats, isDark }) => {
-  const avatarColors = isDark ? darkAvatarColors : lightAvatarColors;
+  // Different mouth styles
+  const mouths = [
+    <path d="M13 20 Q16 23 19 20" stroke={face} strokeWidth="1.5" fill="none" strokeLinecap="round" />,
+    <circle cx="16" cy="20" r="2" fill={face} />,
+    <path d="M13 19 L19 19" stroke={face} strokeWidth="1.5" strokeLinecap="round" />,
+    <path d="M14 19 Q16 21 18 19" stroke={face} strokeWidth="1.5" fill="none" strokeLinecap="round" />,
+    <ellipse cx="16" cy="20" rx="2.5" ry="1.5" fill={face} />,
+  ];
 
   return (
-    <div className="lg:col-span-1">
-      <div className="theme-card rounded-xl p-6 h-[380px] flex flex-col">
+    <svg viewBox="0 0 32 32" className="w-6 h-6">
+      <circle cx="16" cy="16" r="12" fill={bg} />
+      {eyes[variant % 5]}
+      {mouths[variant % 5]}
+    </svg>
+  );
+};
+
+const UserAvatar: React.FC<{ index: number }> = ({ index }) => {
+  const style = avatarStyles[index % avatarStyles.length];
+
+  return (
+    <div
+      className="w-10 h-10 rounded-xl flex items-center justify-center"
+      style={{
+        background: 'white',
+        border: '2px solid #1F2937',
+        boxShadow: '2px 2px 0px #1F2937',
+      }}
+    >
+      <BlobAvatar bg={style.bg} face={style.face} variant={index} />
+    </div>
+  );
+};
+
+export const UserList: React.FC<UserListProps> = ({ loading, users }) => {
+  return (
+    <div className="w-full">
+      <div className="theme-card p-6">
         <div className="flex items-center justify-between mb-5">
-          <div className="flex items-center gap-2">
-            <span className="relative flex h-2 w-2">
-              <span className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${isDark ? 'bg-cyber-cyan' : 'bg-cream-primary'}`}></span>
-              <span className={`relative inline-flex rounded-full h-2 w-2 ${isDark ? 'bg-cyber-cyan' : 'bg-cream-primary'}`}></span>
-            </span>
-            <h3 className={`font-bold ${isDark ? 'text-white' : 'text-cream-text'}`}>在线玩家</h3>
-            <span className={`text-sm ${isDark ? 'text-cyber-text-muted' : 'text-cream-text-muted'}`}>({users.length})</span>
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-fresh-primary text-white"
+                 style={{ border: '2px solid #1F2937', boxShadow: '2px 2px 0px #1F2937' }}>
+              <Users size={16} />
+            </div>
+            <div>
+              <h3 className="font-bold text-fresh-text">在线玩家</h3>
+              <span className="text-sm text-fresh-text-muted">{users.length} 人在线</span>
+            </div>
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto space-y-1 pr-1">
-          {loading ? (
-            <div className={`flex flex-col items-center justify-center h-full ${isDark ? 'text-cyber-text-muted' : 'text-cream-text-muted'}`}>
-              <div className={`w-6 h-6 border-2 rounded-full animate-spin mb-3 ${isDark ? 'border-cyber-card border-t-cyber-cyan' : 'border-cream-card border-t-cream-primary'}`}></div>
-              <span className="text-sm">加载中...</span>
-            </div>
-          ) : users.length === 0 ? (
-            <div className={`flex flex-col items-center justify-center h-full ${isDark ? 'text-cyber-text-muted' : 'text-cream-text-muted'}`}>
-              <Gamepad2 size={36} className="mb-3 opacity-40" />
-              <span className="text-sm">暂无玩家在线</span>
-              <span className="text-xs mt-1 opacity-70">快来成为第一个吧</span>
-            </div>
-          ) : (
-            users.map((user, index) => (
+        {loading ? (
+          <div className="flex flex-col items-center justify-center py-12 text-fresh-text-muted">
+            <div className="w-8 h-8 theme-spinner mb-3"></div>
+            <span className="text-sm font-medium">加载中...</span>
+          </div>
+        ) : users.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-12 text-fresh-text-muted">
+            <Gamepad2 size={40} className="mb-3 opacity-40" />
+            <span className="text-sm font-medium">暂无玩家在线</span>
+            <span className="text-xs mt-1 opacity-70">快来成为第一个吧</span>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+            {users.map((user, index) => (
               <div
                 key={user.id}
-                className={`flex items-center gap-3 p-2.5 rounded-lg transition-colors border border-transparent ${
-                  isDark
-                    ? 'hover:bg-cyber-cyan/5 hover:border-cyber-cyan/20'
-                    : 'hover:bg-cream-primary/5 hover:border-cream-primary/20'
-                }`}
+                className="user-item flex items-center gap-3 p-3"
               >
-                <div
-                  className={`w-9 h-9 rounded-lg bg-gradient-to-br ${avatarColors[index % avatarColors.length]} flex items-center justify-center font-bold text-xs shadow-lg ${isDark ? 'text-cyber-bg' : 'text-white'}`}
-                >
-                  {user.nickname.substring(0, 1).toUpperCase()}
-                </div>
+                <UserAvatar index={index} />
                 <div className="flex-1 min-w-0">
-                  <div className={`font-medium text-sm truncate ${isDark ? 'text-white' : 'text-cream-text'}`}>
+                  <div className="font-bold text-sm truncate text-fresh-text">
                     {user.nickname}
                   </div>
-                  <div className={`flex items-center gap-1 text-xs ${isDark ? 'text-cyber-text-muted' : 'text-cream-text-muted'}`}>
+                  <div className="flex items-center gap-1 text-xs text-fresh-text-muted">
                     <Hash size={10} />
                     <span className="truncate">{user.channel}</span>
                   </div>
                 </div>
-                <StatusIcon status={user.status} isDark={isDark} />
+                <StatusIcon status={user.status} />
               </div>
-            ))
-          )}
-        </div>
-
-        <div className={`pt-4 mt-3 border-t flex justify-between text-xs ${
-          isDark ? 'border-cyber-border text-cyber-text-muted' : 'border-cream-border text-cream-text-muted'
-        }`}>
-          <span>延迟: <span className={isDark ? 'text-cyber-cyan' : 'text-cream-primary'}>{stats.ping}ms</span></span>
-          <span>丢包: <span className={isDark ? 'text-cyber-purple' : 'text-cream-secondary'}>{stats.packetLoss}%</span></span>
-        </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
