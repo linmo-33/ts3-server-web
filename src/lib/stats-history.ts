@@ -1,41 +1,97 @@
-// 服务端历史数据存储（内存）
-// 注意：服务器重启后数据会丢失，如需持久化可改用文件或数据库
+// 服务端历史数据存储（按日统计，文件持久化）
 
-interface HistoryPoint {
-    time: string;
-    count: number;
-    timestamp: number;
+import fs from 'fs';
+import path from 'path';
+
+interface DailyStats {
+    date: string;      // 格式: MM-DD
+    count: number;     // 当日峰值在线人数
+    timestamp: number; // 记录时间戳
 }
 
+const DATA_FILE = path.join(process.cwd(), 'data', 'stats-history.json');
+const MAX_DAYS = 7; // 保留最近7天
+
 class StatsHistory {
-    private history: HistoryPoint[] = [];
-    private maxPoints = 48; // 保留最近48个点（每30秒一个，约24分钟）
+    private history: DailyStats[] = [];
+    private todayMax = 0; // 今日峰值
+
+    constructor() {
+        this.load();
+    }
+
+    private load() {
+        try {
+            if (fs.existsSync(DATA_FILE)) {
+                const data = fs.readFileSync(DATA_FILE, 'utf-8');
+                this.history = JSON.parse(data);
+                // 清理超过7天的旧数据
+                this.cleanup();
+            }
+        } catch {
+            this.history = [];
+        }
+    }
+
+    private save() {
+        try {
+            const dir = path.dirname(DATA_FILE);
+            if (!fs.existsSync(dir)) {
+                fs.mkdirSync(dir, { recursive: true });
+            }
+            fs.writeFileSync(DATA_FILE, JSON.stringify(this.history, null, 2));
+        } catch (err) {
+            console.error('Failed to save stats history:', err);
+        }
+    }
+
+    private cleanup() {
+        const cutoff = Date.now() - MAX_DAYS * 24 * 60 * 60 * 1000;
+        this.history = this.history.filter(item => item.timestamp > cutoff);
+    }
+
+    private getDateString(date: Date): string {
+        return `${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+    }
 
     add(count: number) {
         const now = new Date();
-        const time = `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+        const today = this.getDateString(now);
 
-        // 避免同一分钟内重复添加
-        const lastPoint = this.history[this.history.length - 1];
-        if (lastPoint && lastPoint.time === time) {
-            lastPoint.count = count; // 更新而不是新增
-            return;
-        }
+        // 更新今日峰值
+        this.todayMax = Math.max(this.todayMax, count);
 
-        this.history.push({ time, count, timestamp: Date.now() });
+        // 查找今日记录
+        const todayIndex = this.history.findIndex(item => item.date === today);
 
-        // 保持最大数量
-        if (this.history.length > this.maxPoints) {
-            this.history = this.history.slice(-this.maxPoints);
+        if (todayIndex >= 0) {
+            // 更新今日峰值
+            if (count > this.history[todayIndex].count) {
+                this.history[todayIndex].count = count;
+                this.history[todayIndex].timestamp = Date.now();
+                this.save();
+            }
+        } else {
+            // 新的一天，重置今日峰值
+            this.todayMax = count;
+            this.history.push({ date: today, count, timestamp: Date.now() });
+            this.cleanup();
+            this.save();
         }
     }
 
     getHistory(): { time: string; count: number }[] {
-        return this.history.map(({ time, count }) => ({ time, count }));
+        // 返回最近7天的数据，按日期排序
+        return this.history
+            .sort((a, b) => a.timestamp - b.timestamp)
+            .slice(-MAX_DAYS)
+            .map(({ date, count }) => ({ time: date, count }));
     }
 
     clear() {
         this.history = [];
+        this.todayMax = 0;
+        this.save();
     }
 }
 

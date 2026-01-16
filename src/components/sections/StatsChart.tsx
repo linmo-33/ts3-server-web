@@ -39,7 +39,7 @@ export const StatsChart: React.FC<StatsChartProps> = ({ stats }) => {
           </div>
           <div>
             <h3 className="font-bold text-fresh-text">在线趋势</h3>
-            <span className="text-xs text-fresh-text-muted">实时更新</span>
+            <span className="text-xs text-fresh-text-muted">Online Statistics</span>
           </div>
         </div>
 
@@ -88,7 +88,7 @@ export const StatsChart: React.FC<StatsChartProps> = ({ stats }) => {
                     color: '#1F2937',
                     boxShadow: '4px 4px 0px #1F2937',
                   }}
-                  formatter={(value: number) => [`${value} 人`, '在线']}
+                  formatter={(value: number) => [`${value} 人`, '在线人数']}
                   cursor={{ stroke: chartColors.primary, strokeWidth: 2 }}
                 />
                 <Area

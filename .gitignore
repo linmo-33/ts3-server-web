@@ -29,3 +29,6 @@ dist-ssr
 *.sw?
 .next/*
 .claude/*
+
+# Runtime data
+data/
