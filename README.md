@@ -42,7 +42,7 @@ TeamSpeak 3 服务器实时监控面板，采用清新现代的 UI 设计，展�
 
 ```bash
 # 克隆仓库
-git clone https://github.com/linmo-33/ts3-server-hub.git
+git clone https://github.com/linmo-33/ts3-server-web.git
 cd ts3-server-hub
 
 # 安装依赖
@@ -101,7 +101,7 @@ pnpm start
 
 ### Vercel
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/linmo-33/ts3-server-hub)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/linmo-33/ts3-server-web)
 
 1. 点击上方按钮或在 Vercel 导入项目
 2. 在 Settings → Environment Variables 配置环境变量
