@@ -29,8 +29,7 @@ export const InstallGuideModal: React.FC<InstallGuideModalProps> = ({
               下载客户端
             </h4>
             <p className="text-sm mt-1 text-fresh-text-muted">
-              点击右侧的下载按钮，根据你的操作系统选择对应版本（通常为 Windows
-              64-bit）。
+              点击下载按钮，下载客户端（备用链接中点击&quot;Continue without logging in&quot;进入下载页面）
             </p>
           </div>
         </div>
