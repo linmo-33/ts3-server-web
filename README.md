@@ -112,7 +112,7 @@ pnpm start
 1. 复制环境变量文件并按需修改：
 
 ```bash
-cp .env.example .env.local
+cp .env.example .env
 ```
 
 2. 拉取镜像：
