@@ -22,7 +22,7 @@ export const Modal: React.FC<ModalProps> = ({
         <button
           onClick={onClose}
           className="absolute top-4 right-4 w-8 h-8 flex items-center justify-center rounded-lg transition-all text-fresh-text-muted hover:text-fresh-text hover:bg-fresh-text/5"
-          style={{ border: "2px solid #1F2937" }}
+          style={{ border: "2px solid var(--theme-ink)" }}
         >
           <X size={18} />
         </button>

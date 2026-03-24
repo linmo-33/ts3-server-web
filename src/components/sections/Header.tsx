@@ -1,5 +1,5 @@
 import React from 'react';
-import { Zap, Users } from 'lucide-react';
+import { Zap, Users, Moon, Sun } from 'lucide-react';
 import type { ServerConfig } from '@/types';
 
 interface HeaderProps {
@@ -7,6 +7,8 @@ interface HeaderProps {
   onlineCount: number;
   serverOnline: boolean;
   serverConfig: ServerConfig;
+  isDarkMode: boolean;
+  onToggleTheme: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -14,13 +16,15 @@ export const Header: React.FC<HeaderProps> = ({
   onlineCount,
   serverOnline,
   serverConfig,
+  isDarkMode,
+  onToggleTheme,
 }) => {
   return (
     <header className="flex items-center justify-between">
       <div className="flex items-center gap-4">
         {/* Server Avatar */}
-        <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-fresh-primary border-3 border-fresh-text text-white"
-             style={{ border: '3px solid #1F2937', boxShadow: '4px 4px 0px #1F2937' }}>
+           <div className="w-12 h-12 rounded-xl flex items-center justify-center bg-fresh-primary border-3 border-fresh-text text-white"
+             style={{ border: '3px solid var(--theme-ink)', boxShadow: '4px 4px 0px var(--theme-ink)' }}>
           <Zap size={24} />
         </div>
 
@@ -37,6 +41,15 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Right Side: Status */}
       <div className="flex items-center gap-3">
+        <button
+          onClick={onToggleTheme}
+          className="theme-toggle-btn"
+          aria-label={isDarkMode ? '切换为浅色模式' : '切换为深色模式'}
+          title={isDarkMode ? '切换为浅色模式' : '切换为深色模式'}
+        >
+          {isDarkMode ? <Sun size={18} /> : <Moon size={18} />}
+        </button>
+
         {/* 在线状态 */}
         <div className="status-pill flex items-center">
           {/* 左侧：状态 */}

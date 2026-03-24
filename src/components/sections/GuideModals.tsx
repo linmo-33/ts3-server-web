@@ -21,7 +21,7 @@ export const InstallGuideModal: React.FC<InstallGuideModalProps> = ({
       <div className="space-y-5">
         <div className="flex gap-4">
           <div className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm bg-fresh-primary text-white"
-               style={{ border: '2px solid #1F2937', boxShadow: '2px 2px 0px #1F2937' }}>
+               style={{ border: '2px solid var(--theme-ink)', boxShadow: '2px 2px 0px var(--theme-ink)' }}>
             1
           </div>
           <div>
@@ -35,7 +35,7 @@ export const InstallGuideModal: React.FC<InstallGuideModalProps> = ({
         </div>
         <div className="flex gap-4">
           <div className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm bg-fresh-accent text-white"
-               style={{ border: '2px solid #1F2937', boxShadow: '2px 2px 0px #1F2937' }}>
+               style={{ border: '2px solid var(--theme-ink)', boxShadow: '2px 2px 0px var(--theme-ink)' }}>
             2
           </div>
           <div>
@@ -50,7 +50,7 @@ export const InstallGuideModal: React.FC<InstallGuideModalProps> = ({
         </div>
         <div className="flex gap-4">
           <div className="flex-shrink-0 w-10 h-10 rounded-xl flex items-center justify-center font-black text-sm text-white"
-               style={{ background: '#60A5FA', border: '2px solid #1F2937', boxShadow: '2px 2px 0px #1F2937' }}>
+               style={{ background: '#60A5FA', border: '2px solid var(--theme-ink)', boxShadow: '2px 2px 0px var(--theme-ink)' }}>
             3
           </div>
           <div>
@@ -85,7 +85,7 @@ export const PatchGuideModal: React.FC<PatchGuideModalProps> = ({
     >
       <div className="space-y-6">
         <div className="p-4 rounded-xl text-sm font-medium"
-             style={{ background: '#FEF3C7', border: '2px solid #1F2937', boxShadow: '3px 3px 0px #1F2937' }}>
+             style={{ background: '#FEF3C7', border: '2px solid var(--theme-ink)', boxShadow: '3px 3px 0px var(--theme-ink)' }}>
           ⚠️ 注意：安装汉化包前请彻底关闭 TeamSpeak 客户端。
         </div>
 
@@ -107,7 +107,7 @@ export const PatchGuideModal: React.FC<PatchGuideModalProps> = ({
               </a>{" "}
               下载最新的{" "}
               <code className="px-2 py-1 rounded-lg text-xs font-bold"
-                    style={{ background: '#DCFCE7', border: '1px solid #1F2937' }}>
+                  style={{ background: '#DCFCE7', border: '1px solid var(--theme-ink)' }}>
                 .ts3_plugin
               </code>{" "}
               或压缩包文件。
@@ -132,17 +132,17 @@ export const PatchGuideModal: React.FC<PatchGuideModalProps> = ({
             <p className="text-sm mt-2 text-fresh-text-muted">
               启动 TS3，如果未自动切换，请前往{" "}
               <code className="px-2 py-1 rounded-lg text-xs font-bold"
-                    style={{ background: '#DBEAFE', border: '1px solid #1F2937' }}>
+                  style={{ background: '#DBEAFE', border: '1px solid var(--theme-ink)' }}>
                 Tools
               </code>{" "}
               →{" "}
               <code className="px-2 py-1 rounded-lg text-xs font-bold"
-                    style={{ background: '#DBEAFE', border: '1px solid #1F2937' }}>
+                  style={{ background: '#DBEAFE', border: '1px solid var(--theme-ink)' }}>
                 Options
               </code>{" "}
               →{" "}
               <code className="px-2 py-1 rounded-lg text-xs font-bold"
-                    style={{ background: '#DBEAFE', border: '1px solid #1F2937' }}>
+                  style={{ background: '#DBEAFE', border: '1px solid var(--theme-ink)' }}>
                 Application
               </code>
               ，在 Language 下拉菜单中选择 &quot;Chinese&quot;。

@@ -144,8 +144,8 @@ const UserAvatar: React.FC<{ index: number }> = ({ index }) => {
       className="w-10 h-10 rounded-xl flex items-center justify-center"
       style={{
         background: "white",
-        border: "2px solid #1F2937",
-        boxShadow: "2px 2px 0px #1F2937",
+        border: "2px solid var(--theme-ink)",
+        boxShadow: "2px 2px 0px var(--theme-ink)",
       }}
     >
       <BlobAvatar bg={style.bg} face={style.face} variant={index} />
@@ -162,8 +162,8 @@ export const UserList: React.FC<UserListProps> = ({ loading, users }) => {
             <div
               className="p-2 rounded-lg bg-fresh-primary text-white"
               style={{
-                border: "2px solid #1F2937",
-                boxShadow: "2px 2px 0px #1F2937",
+                border: "2px solid var(--theme-ink)",
+                boxShadow: "2px 2px 0px var(--theme-ink)",
               }}
             >
               <Users size={16} />

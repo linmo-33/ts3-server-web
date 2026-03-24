@@ -42,7 +42,7 @@ export const DownloadSection: React.FC = () => {
           className="download-item flex items-center gap-3 p-4 group"
         >
           <div className="w-11 h-11 rounded-xl flex items-center justify-center bg-fresh-primary text-white"
-               style={{ border: '2px solid #1F2937' }}>
+               style={{ border: '2px solid var(--theme-ink)' }}>
             <Download size={20} />
           </div>
           <div className="flex-1">
