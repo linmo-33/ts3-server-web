@@ -2,6 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --theme-bg: #FDF8F3;
+  --theme-text: #1F2937;
+  --theme-text-secondary: #4B5563;
+  --theme-text-muted: #9CA3AF;
+  --theme-card: #FFFFFF;
+  --theme-ink: #1F2937;
+  --theme-grid-dot: rgba(31, 41, 55, 0.04);
+  --theme-shadow: 6px 6px 0px var(--theme-ink);
+  --theme-shadow-hover: 8px 8px 0px var(--theme-ink);
+  --theme-soft-bg: #F3F4F6;
+}
+
+.dark {
+  --theme-bg: #0F172A;
+  --theme-text: #E2E8F0;
+  --theme-text-secondary: #CBD5E1;
+  --theme-text-muted: #94A3B8;
+  --theme-card: #1E293B;
+  --theme-ink: #CBD5E1;
+  --theme-grid-dot: rgba(148, 163, 184, 0.12);
+  --theme-shadow: 6px 6px 0px rgba(2, 6, 23, 0.65);
+  --theme-shadow-hover: 8px 8px 0px rgba(2, 6, 23, 0.72);
+  --theme-soft-bg: #334155;
+}
+
 /* ========================================
    FRESH GREEN THEME - True Claymorphism
    ======================================== */
@@ -15,10 +41,11 @@ html {
 }
 
 body {
-  background-color: #FDF8F3;
-  color: #1F2937;
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
   line-height: 1.6;
   letter-spacing: 0.01em;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 /* Headings Typography */
@@ -73,10 +100,10 @@ html {
    ======================================== */
 
 .theme-card {
-  background: #FFFFFF;
-  border: 3px solid #1F2937;
+  background: var(--theme-card);
+  border: 3px solid var(--theme-ink);
   border-radius: 1.5rem;
-  box-shadow: 6px 6px 0px #1F2937;
+  box-shadow: var(--theme-shadow);
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: visible;
@@ -84,7 +111,7 @@ html {
 
 .theme-card:hover {
   transform: translate(-2px, -2px);
-  box-shadow: 8px 8px 0px #1F2937;
+  box-shadow: var(--theme-shadow-hover);
 }
 
 /* ========================================
@@ -93,9 +120,9 @@ html {
 
 .theme-btn {
   background: #22C55E;
-  border: 3px solid #1F2937;
+  border: 3px solid var(--theme-ink);
   border-radius: 9999px;
-  box-shadow: 4px 4px 0px #1F2937;
+  box-shadow: 4px 4px 0px var(--theme-ink);
   color: #FFFFFF;
   font-weight: 700;
   transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
@@ -105,42 +132,42 @@ html {
 
 .theme-btn:hover {
   transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0px #1F2937;
+  box-shadow: 6px 6px 0px var(--theme-ink);
 }
 
 .theme-btn:active {
   transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0px #1F2937;
+  box-shadow: 2px 2px 0px var(--theme-ink);
 }
 
 /* Secondary Button */
 .theme-btn-secondary {
-  background: #FFFFFF;
-  border: 3px solid #1F2937;
+  background: var(--theme-card);
+  border: 3px solid var(--theme-ink);
   border-radius: 9999px;
-  box-shadow: 4px 4px 0px #1F2937;
-  color: #1F2937;
+  box-shadow: 4px 4px 0px var(--theme-ink);
+  color: var(--theme-text);
   font-weight: 700;
   transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .theme-btn-secondary:hover {
   transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0px #1F2937;
-  background: #F9FAFB;
+  box-shadow: 6px 6px 0px var(--theme-ink);
+  background: color-mix(in srgb, var(--theme-card) 90%, #FFFFFF 10%);
 }
 
 .theme-btn-secondary:active {
   transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0px #1F2937;
+  box-shadow: 2px 2px 0px var(--theme-ink);
 }
 
 /* Accent Button */
 .theme-btn-accent {
   background: #F87171;
-  border: 3px solid #1F2937;
+  border: 3px solid var(--theme-ink);
   border-radius: 9999px;
-  box-shadow: 4px 4px 0px #1F2937;
+  box-shadow: 4px 4px 0px var(--theme-ink);
   color: #FFFFFF;
   font-weight: 700;
   transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
@@ -148,7 +175,7 @@ html {
 
 .theme-btn-accent:hover {
   transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0px #1F2937;
+  box-shadow: 6px 6px 0px var(--theme-ink);
 }
 
 /* ========================================
@@ -165,17 +192,17 @@ html {
    ======================================== */
 
 .theme-badge {
-  background: #FFFFFF;
-  border: 2px solid #1F2937;
+  background: var(--theme-card);
+  border: 2px solid var(--theme-ink);
   border-radius: 9999px;
-  color: #1F2937;
+  color: var(--theme-text);
   font-weight: 600;
-  box-shadow: 3px 3px 0px #1F2937;
+  box-shadow: 3px 3px 0px var(--theme-ink);
 }
 
 .theme-badge-green {
   background: #DCFCE7;
-  border: 2px solid #1F2937;
+  border: 2px solid var(--theme-ink);
   color: #166534;
 }
 
@@ -184,16 +211,16 @@ html {
    ======================================== */
 
 .stat-card {
-  background: #FFFFFF;
-  border: 2px solid #1F2937;
+  background: var(--theme-card);
+  border: 2px solid var(--theme-ink);
   border-radius: 1rem;
-  box-shadow: 4px 4px 0px #1F2937;
+  box-shadow: 4px 4px 0px var(--theme-ink);
   transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .stat-card:hover {
   transform: translate(-1px, -1px);
-  box-shadow: 5px 5px 0px #1F2937;
+  box-shadow: 5px 5px 0px var(--theme-ink);
 }
 
 /* ========================================
@@ -201,10 +228,10 @@ html {
    ======================================== */
 
 .status-pill {
-  background: #FFFFFF;
-  border: 2px solid #1F2937;
+  background: var(--theme-card);
+  border: 2px solid var(--theme-ink);
   border-radius: 9999px;
-  box-shadow: 3px 3px 0px #1F2937;
+  box-shadow: 3px 3px 0px var(--theme-ink);
   overflow: hidden;
 }
 
@@ -213,11 +240,11 @@ html {
    ======================================== */
 
 .theme-input {
-  background: #FFFFFF;
-  border: 2px solid #1F2937;
+  background: var(--theme-card);
+  border: 2px solid var(--theme-ink);
   border-radius: 0.75rem;
-  box-shadow: 3px 3px 0px #1F2937;
-  color: #1F2937;
+  box-shadow: 3px 3px 0px var(--theme-ink);
+  color: var(--theme-text);
   font-family: ui-monospace, monospace;
 }
 
@@ -233,8 +260,8 @@ html {
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 2px solid #1F2937;
-  box-shadow: 3px 3px 0px #1F2937;
+  border: 2px solid var(--theme-ink);
+  box-shadow: 3px 3px 0px var(--theme-ink);
   z-index: 10;
   transition: transform 0.15s ease-out;
 }
@@ -428,7 +455,7 @@ html {
   border-radius: 9999px;
   height: 10px;
   overflow: hidden;
-  border: 2px solid #1F2937;
+  border: 2px solid var(--theme-ink);
 }
 
 .progress-bar-fill {
@@ -452,7 +479,7 @@ html {
    ======================================== */
 
 .theme-grid {
-  background-image: radial-gradient(rgba(31, 41, 55, 0.04) 1px, transparent 1px);
+  background-image: radial-gradient(var(--theme-grid-dot) 1px, transparent 1px);
   background-size: 24px 24px;
 }
 
@@ -494,16 +521,16 @@ html {
    ======================================== */
 
 .download-item {
-  background: #FFFFFF;
-  border: 2px solid #1F2937;
+  background: var(--theme-card);
+  border: 2px solid var(--theme-ink);
   border-radius: 1rem;
-  box-shadow: 4px 4px 0px #1F2937;
+  box-shadow: 4px 4px 0px var(--theme-ink);
   transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .download-item:hover {
   transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0px #1F2937;
+  box-shadow: 6px 6px 0px var(--theme-ink);
 }
 
 /* ========================================
@@ -519,6 +546,61 @@ html {
 .user-item:hover {
   background: #F0FDF4;
   border-color: #22C55E;
+}
+
+.dark .user-item:hover {
+  background: rgba(34, 197, 94, 0.14);
+}
+
+.theme-toggle-btn {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--theme-card);
+  border: 2px solid var(--theme-ink);
+  box-shadow: 3px 3px 0px var(--theme-ink);
+  color: var(--theme-text-muted);
+  transition: all 0.15s ease;
+}
+
+.theme-toggle-btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0px var(--theme-ink);
+  color: #22C55E;
+}
+
+.theme-toggle-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: 2px 2px 0px var(--theme-ink);
+}
+
+@layer utilities {
+  .dark .bg-fresh-bg {
+    background-color: var(--theme-bg) !important;
+  }
+
+  .dark .text-fresh-text {
+    color: var(--theme-text) !important;
+  }
+
+  .dark .text-fresh-text-secondary {
+    color: var(--theme-text-secondary) !important;
+  }
+
+  .dark .text-fresh-text-muted {
+    color: var(--theme-text-muted) !important;
+  }
+
+  .dark .bg-white {
+    background-color: var(--theme-card) !important;
+  }
+
+  .dark .border-fresh-text {
+    border-color: var(--theme-ink) !important;
+  }
 }
 
 /* ========================================

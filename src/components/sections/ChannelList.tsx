@@ -102,8 +102,8 @@ const ChannelCard: React.FC<{ channel: Channel }> = ({ channel }) => {
                     className="w-10 h-10 rounded-xl flex items-center justify-center"
                     style={{
                         background: iconConfig.bg,
-                        border: '2px solid #1F2937',
-                        boxShadow: '2px 2px 0px #1F2937',
+                        border: '2px solid var(--theme-ink)',
+                        boxShadow: '2px 2px 0px var(--theme-ink)',
                     }}
                 >
                     <Icon size={20} style={{ color: iconConfig.color }} />
@@ -169,7 +169,7 @@ export const ChannelList: React.FC<ChannelListProps> = ({ loading, channels }) =
                 <div className="flex items-center gap-3 mb-4">
                     <div
                         className="p-2 rounded-lg bg-fresh-primary text-white"
-                        style={{ border: '2px solid #1F2937', boxShadow: '2px 2px 0px #1F2937' }}
+                        style={{ border: '2px solid var(--theme-ink)', boxShadow: '2px 2px 0px var(--theme-ink)' }}
                     >
                         <Hash size={16} />
                     </div>

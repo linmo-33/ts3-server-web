@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { Users, Clock, Wifi, Signal } from 'lucide-react';
 import { Header } from '@/components/sections/Header';
 import { HeroSection } from '@/components/sections/HeroSection';
@@ -18,6 +19,23 @@ interface HomePageClientProps {
 
 export function HomePageClient({ serverConfig }: HomePageClientProps) {
   const { loading, error, stats, users, channels, channelCounts } = useTS3Data(30000);
+  const [isDarkMode, setIsDarkMode] = useState(false);
+
+  useEffect(() => {
+    const savedTheme = window.localStorage.getItem('theme');
+    const preferDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const shouldUseDark = savedTheme ? savedTheme === 'dark' : preferDark;
+
+    document.documentElement.classList.toggle('dark', shouldUseDark);
+    setIsDarkMode(shouldUseDark);
+  }, []);
+
+  const toggleTheme = () => {
+    const nextIsDark = !isDarkMode;
+    setIsDarkMode(nextIsDark);
+    document.documentElement.classList.toggle('dark', nextIsDark);
+    window.localStorage.setItem('theme', nextIsDark ? 'dark' : 'light');
+  };
 
   // 将真实人数合并到频道数据中
   const channelsWithRealCounts = channels.map((channel) => ({
@@ -43,6 +61,8 @@ export function HomePageClient({ serverConfig }: HomePageClientProps) {
             onlineCount={stats.onlineCount}
             serverOnline={!error}
             serverConfig={serverConfig}
+            isDarkMode={isDarkMode}
+            onToggleTheme={toggleTheme}
           />
 
           {/* Hero - Full Width */}

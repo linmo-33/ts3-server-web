@@ -28,8 +28,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ serverConfig }) => {
             <div
               className="inline-flex items-center gap-1.5 px-3 py-1.5 mb-4 theme-badge-green"
               style={{
-                border: "2px solid #1F2937",
-                boxShadow: "2px 2px 0px #1F2937",
+                border: "2px solid var(--theme-ink)",
+                boxShadow: "2px 2px 0px var(--theme-ink)",
               }}
             >
               <span
@@ -55,8 +55,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ serverConfig }) => {
                   key={tag}
                   className="px-3 py-1 text-xs font-bold rounded-full bg-white text-fresh-text"
                   style={{
-                    border: "2px solid #1F2937",
-                    boxShadow: "2px 2px 0px #1F2937",
+                    border: "2px solid var(--theme-ink)",
+                    boxShadow: "2px 2px 0px var(--theme-ink)",
                   }}
                 >
                   {tag}
@@ -76,8 +76,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ serverConfig }) => {
                 onClick={handleCopy}
                 className="p-2.5 rounded-lg transition-all duration-150 bg-white text-fresh-text-muted hover:text-fresh-primary"
                 style={{
-                  border: "2px solid #1F2937",
-                  boxShadow: "2px 2px 0px #1F2937",
+                  border: "2px solid var(--theme-ink)",
+                  boxShadow: "2px 2px 0px var(--theme-ink)",
                 }}
               >
                 {copied ? (
