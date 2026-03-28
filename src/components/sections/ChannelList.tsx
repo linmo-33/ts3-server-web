@@ -151,7 +151,7 @@ const ChannelCard: React.FC<{ channel: Channel }> = ({ channel }) => {
 export const ChannelList: React.FC<ChannelListProps> = ({ loading, channels }) => {
     // 过滤并排序：显示所有频道，有人的优先
     const sortedChannels = [...channels]
-        .filter((c) => c.channel_name.trim().length > 0) // 过滤分隔符
+        .filter((c) => c.channel_name.trim().length > 0) // 过滤规范化后的频道名称
         .sort((a, b) => {
             const aCount = a.real_clients ?? a.total_clients;
             const bCount = b.real_clients ?? b.total_clients;
