@@ -18,7 +18,7 @@ function getConnectionTimeout(): number {
 const CHANNEL_SPACER_PREFIX_REGEX = /^(?:\[(?:c|l|r|\*)spacer\d*\]\s*)+/i;
 
 function normalizeChannelDisplayName(name: string): string {
-  return name.replace(CHANNEL_SPACER_PREFIX_REGEX, "").trim();
+    return name.replace(CHANNEL_SPACER_PREFIX_REGEX, '').trim();
 }
 
 async function getConnection(): Promise<TeamSpeak> {
