@@ -15,6 +15,16 @@ function getConnectionTimeout(): number {
     return parseInt(process.env.TS3_CONNECTION_TIMEOUT || '30000');
 }
 
+const CHANNEL_SPACER_PREFIX_REGEX = /^(?:\[(?:(?:c|l|r|\*)?spacer)\d*\]\s*)+/i;
+
+function isSpacerChannelName(rawChannelName: string): boolean {
+    return rawChannelName.match(CHANNEL_SPACER_PREFIX_REGEX) !== null;
+}
+
+function normalizeChannelDisplayName(rawChannelName: string): string {
+    return rawChannelName.replace(CHANNEL_SPACER_PREFIX_REGEX, '').trim();
+}
+
 async function getConnection(): Promise<TeamSpeak> {
     const now = Date.now();
     const timeout = getConnectionTimeout();
@@ -123,7 +133,8 @@ export async function getChannelList() {
 
     return channels.map((c) => ({
         cid: c.cid,
-        channel_name: c.name.replace(/\[cspacer\d*\]/g, '').trim(),
+        channel_name: normalizeChannelDisplayName(c.name),
+        channel_is_spacer: isSpacerChannelName(c.name),
         channel_maxclients: c.maxclients,
         total_clients: c.totalClients,
         channel_order: c.order?.toString() || '0',

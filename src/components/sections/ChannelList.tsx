@@ -18,6 +18,7 @@ import type { LucideIcon } from 'lucide-react';
 interface Channel {
     cid: string;
     channel_name: string;
+    channel_is_spacer: boolean;
     channel_maxclients: number;
     total_clients: number;
     real_clients?: number; // 真实用户数
@@ -151,7 +152,11 @@ const ChannelCard: React.FC<{ channel: Channel }> = ({ channel }) => {
 export const ChannelList: React.FC<ChannelListProps> = ({ loading, channels }) => {
     // 过滤并排序：显示所有频道，有人的优先
     const sortedChannels = [...channels]
-        .filter((c) => !c.channel_name.includes('[cspacer')) // 过滤分隔符
+        .filter((c) => {
+            const clientCount = c.real_clients ?? c.total_clients;
+            // 装饰性 spacer 频道仅在无人时隐藏；有人时保留显示
+            return !(c.channel_is_spacer && clientCount === 0);
+        })
         .sort((a, b) => {
             const aCount = a.real_clients ?? a.total_clients;
             const bCount = b.real_clients ?? b.total_clients;
