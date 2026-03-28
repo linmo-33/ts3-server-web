@@ -29,6 +29,7 @@ export interface ClientInfo {
 export interface ChannelInfo {
   cid: string;
   channel_name: string;
+  channel_is_spacer: boolean;
   channel_maxclients: number;
   total_clients: number;
   channel_order: string;

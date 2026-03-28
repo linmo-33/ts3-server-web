@@ -61,6 +61,7 @@ async function fetchAllData(): Promise<AllData> {
   const channels: ChannelInfo[] = channelsRaw.map((c) => ({
     cid: c.cid,
     channel_name: c.channel_name,
+    channel_is_spacer: c.channel_is_spacer,
     channel_maxclients: c.channel_maxclients,
     total_clients: c.total_clients,
     channel_order: c.channel_order,
