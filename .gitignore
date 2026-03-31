@@ -33,3 +33,6 @@ dist-ssr
 
 # Runtime data
 data/
+
+# Local-only workspace notes and docs
+local/

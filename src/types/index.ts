@@ -9,6 +9,7 @@ export interface ServerConfig {
   name: string;
   description: string;
   address: string;
+  displayChannelNames: string[];
 }
 
 /** 用户信息 */

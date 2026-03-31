@@ -104,27 +104,30 @@ const BlobAvatar: React.FC<{ bg: string; face: string; variant: number }> = ({
   // Different mouth styles
   const mouths = [
     <path
+      key="smile"
       d="M13 20 Q16 23 19 20"
       stroke={face}
       strokeWidth="1.5"
       fill="none"
       strokeLinecap="round"
     />,
-    <circle cx="16" cy="20" r="2" fill={face} />,
+    <circle key="dot" cx="16" cy="20" r="2" fill={face} />,
     <path
+      key="flat"
       d="M13 19 L19 19"
       stroke={face}
       strokeWidth="1.5"
       strokeLinecap="round"
     />,
     <path
+      key="curve"
       d="M14 19 Q16 21 18 19"
       stroke={face}
       strokeWidth="1.5"
       fill="none"
       strokeLinecap="round"
     />,
-    <ellipse cx="16" cy="20" rx="2.5" ry="1.5" fill={face} />,
+    <ellipse key="oval" cx="16" cy="20" rx="2.5" ry="1.5" fill={face} />,
   ];
 
   return (

@@ -25,7 +25,7 @@ function mapClientsToUsers(clients: ClientInfo[], channels: ChannelInfo[]): User
 }
 
 // 计算每个频道的真实用户数
-function calculateRealChannelCounts(clients: ClientInfo[], channels: ChannelInfo[]): Map<string, number> {
+function calculateRealChannelCounts(clients: ClientInfo[]): Map<string, number> {
     const counts = new Map<string, number>();
 
     // 统计每个频道的真实用户数
@@ -66,7 +66,7 @@ export function useTS3Data(refreshInterval = 30000) {
 
             setUsers(mapClientsToUsers(data.clients, data.channels));
             setChannels(data.channels);
-            setChannelCounts(calculateRealChannelCounts(data.clients, data.channels));
+            setChannelCounts(calculateRealChannelCounts(data.clients));
             setError(null);
         } catch (err) {
             setError(err instanceof Error ? err.message : '获取数据失败');

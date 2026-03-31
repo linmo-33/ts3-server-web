@@ -103,7 +103,11 @@ export function HomePageClient({ serverConfig }: HomePageClientProps) {
 
           {/* Channel + Download - Bento Grid */}
           <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <ChannelList loading={loading} channels={channelsWithRealCounts} />
+            <ChannelList
+              loading={loading}
+              channels={channelsWithRealCounts}
+              displayChannelNames={serverConfig.displayChannelNames}
+            />
             <DownloadSection />
           </section>
 

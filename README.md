@@ -23,14 +23,14 @@
 
 ## 技术栈
 
-| 技术 | 说明 |
-|------|------|
-| [Next.js 16](https://nextjs.org/) | React 全栈框架 (App Router) |
-| [TypeScript](https://www.typescriptlang.org/) | 类型安全 |
-| [Tailwind CSS](https://tailwindcss.com/) | 原子化 CSS |
-| [ts3-nodejs-library](https://github.com/Multivit4min/TS3-NodeJS-Library) | TS3 ServerQuery 客户端 |
-| [Lucide React](https://lucide.dev/) | 图标库 |
-| [Recharts](https://recharts.org/) | 图表组件 |
+| 技术                                                                     | 说明                        |
+| ------------------------------------------------------------------------ | --------------------------- |
+| [Next.js 16](https://nextjs.org/)                                        | React 全栈框架 (App Router) |
+| [TypeScript](https://www.typescriptlang.org/)                            | 类型安全                    |
+| [Tailwind CSS](https://tailwindcss.com/)                                 | 原子化 CSS                  |
+| [ts3-nodejs-library](https://github.com/Multivit4min/TS3-NodeJS-Library) | TS3 ServerQuery 客户端      |
+| [Lucide React](https://lucide.dev/)                                      | 图标库                      |
+| [Recharts](https://recharts.org/)                                        | 图表组件                    |
 
 ## 快速开始
 
@@ -81,9 +81,18 @@ RATE_LIMIT_MAX_REQUESTS=30             # 每窗口最大请求数
 SERVER_NAME=我的服务器                  # 显示的服务器名称
 SERVER_DESCRIPTION=欢迎加入             # 服务器描述
 SERVER_ADDRESS=ts.example.com           # 显示的连接地址
+DISPLAY_CHANNEL_NAMES=大厅,APEX,CS:GO   # 可选：频道白名单，逗号分隔
 ```
 
 说明：页面展示配置在服务运行时读取，适合 Docker 直接使用预构建镜像部署。为了兼容旧配置，`NEXT_PUBLIC_SERVER_*` 仍然可用，但新部署建议改用 `SERVER_*`。
+
+> 避免展示频道中的装饰性频道，建议使用频道白名单
+
+频道显示规则：
+
+- 有人的频道始终显示
+- 如果配置了 `DISPLAY_CHANNEL_NAMES`，白名单频道始终显示；未命中的无人频道不显示
+- 如果未配置 `DISPLAY_CHANNEL_NAMES`，默认显示所有名称非空的频道
 
 ### 开发
 
@@ -144,7 +153,6 @@ docker compose logs -f
 ```bash
 docker compose down
 ```
-
 
 ## 项目结构
 

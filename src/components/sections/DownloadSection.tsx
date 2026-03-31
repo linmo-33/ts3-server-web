@@ -3,12 +3,6 @@ import { Download, HelpCircle, ArrowRight } from 'lucide-react';
 import { DOWNLOAD_LINKS } from '@/constants/downloads';
 import { InstallGuideModal, PatchGuideModal } from './GuideModals';
 
-const quickStartSteps = [
-  { step: 1, text: '下载客户端' },
-  { step: 2, text: '安装并启动' },
-  { step: 3, text: '点击快速连接' },
-];
-
 export const DownloadSection: React.FC = () => {
   const [showInstallGuide, setShowInstallGuide] = useState(false);
   const [showPatchGuide, setShowPatchGuide] = useState(false);

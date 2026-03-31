@@ -27,6 +27,35 @@ interface Channel {
 interface ChannelListProps {
     loading: boolean;
     channels: Channel[];
+    displayChannelNames: string[];
+}
+
+function normalizeChannelMatchName(name: string): string {
+    return name.trim().toLocaleLowerCase();
+}
+
+function shouldDisplayChannel(channel: Channel, displayChannelNames: string[]): boolean {
+    const realClientCount = channel.real_clients ?? 0;
+
+    if (!channel.channel_name.trim()) {
+        return false;
+    }
+
+    if (realClientCount > 0) {
+        return true;
+    }
+
+    const normalizedChannelName = normalizeChannelMatchName(channel.channel_name);
+    const matchesWhitelist = displayChannelNames.some((keyword) => {
+        const normalizedKeyword = normalizeChannelMatchName(keyword);
+        return normalizedKeyword !== '' && normalizedChannelName.includes(normalizedKeyword);
+    });
+
+    if (displayChannelNames.length === 0) {
+        return true;
+    }
+
+    return matchesWhitelist;
 }
 
 // 图标列表
@@ -149,14 +178,10 @@ const ChannelCard: React.FC<{ channel: Channel }> = ({ channel }) => {
     );
 };
 
-export const ChannelList: React.FC<ChannelListProps> = ({ loading, channels }) => {
-    // 过滤并排序：显示所有频道，有人的优先
+export const ChannelList: React.FC<ChannelListProps> = ({ loading, channels, displayChannelNames }) => {
+    // 过滤并排序：有人的频道始终显示；配置白名单后仅显示命中的无人频道
     const sortedChannels = [...channels]
-        .filter((c) => {
-            const clientCount = c.real_clients ?? c.total_clients;
-            // 装饰性 spacer 频道仅在无人时隐藏；有人时保留显示
-            return !(c.channel_is_spacer && clientCount === 0);
-        })
+        .filter((c) => shouldDisplayChannel(c, displayChannelNames))
         .sort((a, b) => {
             const aCount = a.real_clients ?? a.total_clients;
             const bCount = b.real_clients ?? b.total_clients;
