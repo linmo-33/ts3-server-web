@@ -224,7 +224,6 @@ async function getConnection(): Promise<Query> {
 
 function mapServerInfo(info: RawServerInfo) {
   return {
-    virtualserver_unique_identifier: info.virtualserver_unique_identifier,
     virtualserver_name: info.virtualserver_name,
     virtualserver_clientsonline: parseNumber(info.virtualserver_clientsonline),
     virtualserver_maxclients: parseNumber(info.virtualserver_maxclients),
@@ -256,7 +255,6 @@ export async function getClientList() {
     .filter((client): client is RawClientEntry => client.client_type === '0')
     .map((client) => ({
       clid: client.clid,
-      client_unique_identifier: client.client_unique_identifier,
       client_nickname: client.client_nickname,
       client_channel_id: client.cid,
       client_type: client.client_type,
