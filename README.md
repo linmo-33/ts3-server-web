@@ -74,8 +74,10 @@ TS_VIRTUAL_PORT=9987                     # TS3 虚拟服务器端口
 # 可选配置
 TS_CONNECTION_TIMEOUT=30000            # 连接超时 (毫秒)
 TS_CACHE_TTL=30000                     # 缓存时间 (毫秒)
+TRUST_PROXY_HEADERS=false              # 仅在可信反向代理后才开启
 RATE_LIMIT_WINDOW_MS=60000             # 限流窗口
 RATE_LIMIT_MAX_REQUESTS=30             # 每窗口最大请求数
+RATE_LIMIT_MAX_KEYS=5000               # 限流键上限，避免内存无限增长
 
 # ==========================================
 # 页面显示配置 (公开，运行时读取)
@@ -92,6 +94,7 @@ DISPLAY_CHANNEL_NAMES=大厅,APEX,CS:GO   # 可选：频道白名单，逗号分
 - 为了兼容旧配置，`NEXT_PUBLIC_SERVER_*` 仍然可用，但新部署建议改用 `SERVER_*`。
 - 旧的 `TS3_*` 查询环境变量仍然兼容，但新部署建议改用 `TS_*`。
 - `tcp` 模式用于传统 TS3 ServerQuery；`ssh` 模式用于 TS6 Query。
+- `TRUST_PROXY_HEADERS` 默认关闭，只有在应用明确部署在可信反向代理之后时才应开启。
 
 > 避免展示频道中的装饰性频道，建议使用频道白名单
 

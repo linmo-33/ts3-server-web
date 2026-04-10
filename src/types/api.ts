@@ -4,7 +4,6 @@
 
 /** 服务器信息 */
 export interface ServerInfo {
-  virtualserver_unique_identifier: string;
   virtualserver_name: string;
   virtualserver_clientsonline: number;
   virtualserver_maxclients: number;
@@ -16,7 +15,6 @@ export interface ServerInfo {
 /** 客户端信息 */
 export interface ClientInfo {
   clid: string;
-  client_unique_identifier: string;
   client_nickname: string;
   connection_client_ip: string;
   client_channel_id: string;

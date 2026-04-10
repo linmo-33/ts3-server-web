@@ -11,14 +11,50 @@ function getCacheTTL(): number {
   return parseInt(process.env.TS_CACHE_TTL || process.env.TS3_CACHE_TTL || '10000');
 }
 
+function shouldTrustProxyHeaders(): boolean {
+  return ['1', 'true', 'yes', 'on'].includes(
+    (process.env.TRUST_PROXY_HEADERS || 'false').trim().toLowerCase()
+  );
+}
+
 function isCacheValid(): boolean {
   return allDataCache ? Date.now() - allDataCache.timestamp < getCacheTTL() : false;
 }
 
-function getClientIP(request: NextRequest): string {
-  return request.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
-    || request.headers.get('x-real-ip')
-    || 'unknown';
+function createRequestFingerprint(request: NextRequest): string {
+  const fingerprintSource = [
+    request.headers.get('user-agent') ?? 'unknown-agent',
+    request.headers.get('accept-language') ?? 'unknown-language',
+  ].join('|');
+
+  let hash = 0;
+
+  for (let index = 0; index < fingerprintSource.length; index += 1) {
+    hash = (hash * 31 + fingerprintSource.charCodeAt(index)) >>> 0;
+  }
+
+  return `fp:${hash.toString(36)}`;
+}
+
+function getTrustedProxyIP(request: NextRequest): string | null {
+  const forwarded = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim();
+  const realIp = request.headers.get('x-real-ip')?.trim();
+  const vercelIp = request.headers.get('x-vercel-forwarded-for')?.trim();
+  const cloudflareIp = request.headers.get('cf-connecting-ip')?.trim();
+
+  return forwarded || realIp || vercelIp || cloudflareIp || null;
+}
+
+function getRateLimitKey(request: NextRequest): string {
+  if (shouldTrustProxyHeaders()) {
+    const trustedIP = getTrustedProxyIP(request);
+
+    if (trustedIP) {
+      return `ip:${trustedIP}`;
+    }
+  }
+
+  return createRequestFingerprint(request);
 }
 
 async function fetchAllData(): Promise<TS3AllDataResponse> {
@@ -33,7 +69,6 @@ async function fetchAllData(): Promise<TS3AllDataResponse> {
   const channelsRaw = await getChannelList();
 
   const server: ServerInfo = {
-    virtualserver_unique_identifier: serverInfoRaw.virtualserver_unique_identifier,
     virtualserver_name: serverInfoRaw.virtualserver_name,
     virtualserver_clientsonline: serverInfoRaw.virtualserver_clientsonline,
     virtualserver_maxclients: serverInfoRaw.virtualserver_maxclients,
@@ -44,7 +79,6 @@ async function fetchAllData(): Promise<TS3AllDataResponse> {
 
   const clients: ClientInfo[] = clientsRaw.map((c) => ({
     clid: c.clid,
-    client_unique_identifier: c.client_unique_identifier,
     client_nickname: c.client_nickname,
     connection_client_ip: '',
     client_channel_id: c.client_channel_id,
@@ -82,8 +116,8 @@ async function fetchAllData(): Promise<TS3AllDataResponse> {
 }
 
 export async function GET(request: NextRequest) {
-  const ip = getClientIP(request);
-  const { allowed, remaining } = checkRateLimit(ip);
+  const rateLimitKey = getRateLimitKey(request);
+  const { allowed, remaining } = checkRateLimit(rateLimitKey);
 
   if (!allowed) {
     return NextResponse.json(
@@ -121,7 +155,12 @@ export async function GET(request: NextRequest) {
     }
   } catch (error) {
     console.error('TS3 Query Error:', error);
-    const message = error instanceof Error ? error.message : 'Unknown error';
-    return jsonResponse({ error: 'TS3 Query failed', message }, 500);
+    return jsonResponse(
+      {
+        error: 'TS3 Query failed',
+        message: 'Unable to load server data right now.',
+      },
+      500
+    );
   }
 }

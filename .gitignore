@@ -30,6 +30,7 @@ dist-ssr
 *.sw?
 .next/*
 .claude/*
+*.tsbuildinfo
 
 # Runtime data
 data/
