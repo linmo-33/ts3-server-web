@@ -30,6 +30,47 @@ interface ChannelListProps {
     displayChannelNames: string[];
 }
 
+function hexToRgba(hex: string, alpha: number): string {
+    const normalized = hex.replace('#', '');
+    const expanded = normalized.length === 3
+        ? normalized.split('').map((char) => char + char).join('')
+        : normalized;
+
+    const r = parseInt(expanded.slice(0, 2), 16);
+    const g = parseInt(expanded.slice(2, 4), 16);
+    const b = parseInt(expanded.slice(4, 6), 16);
+
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function getChannelHeatState(occupancyRatio: number, hasUsers: boolean) {
+    if (!hasUsers) {
+        return {
+            accent: '#94A3B8',
+            label: '摸鱼中',
+        };
+    }
+
+    if (occupancyRatio >= 0.8) {
+        return {
+            accent: '#EF4444',
+            label: '火力全开',
+        };
+    }
+
+    if (occupancyRatio >= 0.45) {
+        return {
+            accent: '#F59E0B',
+            label: '热聊中',
+        };
+    }
+
+    return {
+        accent: '#22C55E',
+        label: '刚开麦',
+    };
+}
+
 function normalizeChannelMatchName(name: string): string {
     return name.trim().toLocaleLowerCase();
 }
@@ -113,9 +154,19 @@ const ChannelCard: React.FC<{ channel: Channel }> = ({ channel }) => {
     // 使用真实用户数（如果有的话）
     const clientCount = channel.real_clients ?? channel.total_clients;
     const hasUsers = clientCount > 0;
-    const percentage = channel.channel_maxclients > 0
-        ? (clientCount / channel.channel_maxclients) * 100
-        : 0;
+    const occupancyRatio = channel.channel_maxclients > 0
+        ? Math.min(clientCount / channel.channel_maxclients, 1)
+        : hasUsers
+            ? Math.min(clientCount / 8, 0.55)
+            : 0;
+    const percentage = occupancyRatio * 100;
+    const heatState = getChannelHeatState(occupancyRatio, hasUsers);
+    const cardBackground = hasUsers
+        ? `linear-gradient(135deg, ${hexToRgba(heatState.accent, 0.18)} 0%, var(--theme-card) 58%, ${hexToRgba(iconConfig.color, 0.08)} 100%)`
+        : 'var(--theme-card)';
+    const cardShadow = hasUsers
+        ? `4px 4px 0px var(--theme-ink), 0 12px 24px ${hexToRgba(heatState.accent, 0.16)}`
+        : '4px 4px 0px var(--theme-ink)';
 
     // 根据使用率确定进度条颜色
     const getProgressColor = () => {
@@ -125,7 +176,14 @@ const ChannelCard: React.FC<{ channel: Channel }> = ({ channel }) => {
     };
 
     return (
-        <div className="stat-card p-4" style={{ opacity: hasUsers ? 1 : 0.6 }}>
+        <div
+            className="stat-card p-4"
+            style={{
+                opacity: hasUsers ? 1 : 0.7,
+                background: cardBackground,
+                boxShadow: cardShadow,
+            }}
+        >
             {/* 图标 + 人数 */}
             <div className="flex items-center justify-between mb-3">
                 <div
@@ -138,21 +196,35 @@ const ChannelCard: React.FC<{ channel: Channel }> = ({ channel }) => {
                 >
                     <Icon size={20} style={{ color: iconConfig.color }} />
                 </div>
-                <div className="flex items-center gap-1">
-                    <Users
-                        size={14}
-                        className={hasUsers ? 'text-fresh-primary' : 'text-fresh-text-muted'}
-                    />
+                <div className="flex flex-col items-end gap-1">
+                    <div className="flex items-center gap-1">
+                        <Users
+                            size={14}
+                            className={hasUsers ? 'text-fresh-primary' : 'text-fresh-text-muted'}
+                        />
+                        <span
+                            className={`text-sm font-bold tabular-nums ${hasUsers ? 'text-fresh-text' : 'text-fresh-text-muted'
+                                }`}
+                        >
+                            {clientCount}
+                            {channel.channel_maxclients > 0 && (
+                                <span className="text-fresh-text-muted text-xs">
+                                    /{channel.channel_maxclients}
+                                </span>
+                            )}
+                        </span>
+                    </div>
                     <span
-                        className={`text-sm font-bold tabular-nums ${hasUsers ? 'text-fresh-text' : 'text-fresh-text-muted'
-                            }`}
+                        className="px-2 py-0.5 rounded-full text-[10px] font-bold"
+                        style={{
+                            color: hasUsers ? heatState.accent : 'var(--theme-text-muted)',
+                            background: hasUsers
+                                ? hexToRgba(heatState.accent, 0.14)
+                                : 'rgba(148, 163, 184, 0.12)',
+                            border: `1px solid ${hasUsers ? hexToRgba(heatState.accent, 0.35) : 'rgba(148, 163, 184, 0.2)'}`,
+                        }}
                     >
-                        {clientCount}
-                        {channel.channel_maxclients > 0 && (
-                            <span className="text-fresh-text-muted text-xs">
-                                /{channel.channel_maxclients}
-                            </span>
-                        )}
+                        {heatState.label}
                     </span>
                 </div>
             </div>
@@ -190,12 +262,11 @@ export const ChannelList: React.FC<ChannelListProps> = ({ loading, channels, dis
             if (aCount === 0 && bCount > 0) return 1;
             // 都有人或都没人，按人数排序
             return bCount - aCount;
-        })
-        .slice(0, 6); // 只显示前6个
+        });
 
     return (
         <div className="lg:col-span-2">
-            <div className="theme-card p-6 h-[280px] flex flex-col">
+            <div className="theme-card p-6 h-[340px] md:h-[360px] flex flex-col">
                 <div className="flex items-center gap-3 mb-4">
                     <div
                         className="p-2 rounded-lg bg-fresh-primary text-white"
@@ -210,7 +281,7 @@ export const ChannelList: React.FC<ChannelListProps> = ({ loading, channels, dis
                 </div>
 
                 {/* 频道卡片网格 */}
-                <div className="flex-1 overflow-auto">
+                <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden pr-1 pb-1">
                     {loading ? (
                         <div className="h-full flex items-center justify-center text-fresh-text-muted">
                             <div className="text-center">
@@ -226,7 +297,7 @@ export const ChannelList: React.FC<ChannelListProps> = ({ loading, channels, dis
                             </div>
                         </div>
                     ) : (
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 auto-rows-max">
                             {sortedChannels.map((channel) => (
                                 <ChannelCard key={channel.cid} channel={channel} />
                             ))}
