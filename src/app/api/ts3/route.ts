@@ -1,19 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerInfo, getClientList, getChannelList } from '@/lib/ts3-query';
+import { getOnlineTrendHistory, recordOnlineTrendPoint } from '@/lib/ts3-history';
 import { checkRateLimit } from '@/lib/rate-limit';
-import type { ServerInfo, ClientInfo, ChannelInfo } from '@/types/api';
+import type { ServerInfo, ClientInfo, ChannelInfo, TS3AllDataResponse } from '@/types/api';
 
 // 统一缓存
-interface AllData {
-  server: ServerInfo;
-  clients: ClientInfo[];
-  channels: ChannelInfo[];
-}
-
-let allDataCache: { data: AllData; timestamp: number } | null = null;
+let allDataCache: { data: TS3AllDataResponse; timestamp: number } | null = null;
 
 function getCacheTTL(): number {
-  return parseInt(process.env.TS3_CACHE_TTL || '10000');
+  return parseInt(process.env.TS_CACHE_TTL || process.env.TS3_CACHE_TTL || '10000');
 }
 
 function isCacheValid(): boolean {
@@ -26,7 +21,7 @@ function getClientIP(request: NextRequest): string {
     || 'unknown';
 }
 
-async function fetchAllData(): Promise<AllData> {
+async function fetchAllData(): Promise<TS3AllDataResponse> {
   // 如果缓存有效，直接返回
   if (isCacheValid() && allDataCache) {
     return allDataCache.data;
@@ -67,10 +62,19 @@ async function fetchAllData(): Promise<AllData> {
     channel_order: c.channel_order,
   }));
 
-  const data: AllData = {
+  recordOnlineTrendPoint({
+    timestamp: Date.now(),
+    onlineCount: clients.length,
+    maxSlots: server.virtualserver_maxclients,
+    ping: server.virtualserver_ping,
+    packetLoss: server.virtualserver_packetloss_speech,
+  });
+
+  const data: TS3AllDataResponse = {
     server,
     clients,
     channels,
+    history: getOnlineTrendHistory(),
   };
 
   allDataCache = { data, timestamp: Date.now() };
@@ -110,6 +114,8 @@ export async function GET(request: NextRequest) {
         return jsonResponse(allData.channels);
       case 'all':
         return jsonResponse(allData);
+      case 'history':
+        return jsonResponse(allData.history);
       default:
         return jsonResponse({ error: 'Invalid type parameter' }, 400);
     }

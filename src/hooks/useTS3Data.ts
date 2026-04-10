@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { ts3Api } from '@/lib/api';
 import type { ServerStats, User } from '@/types';
-import type { ClientInfo, ChannelInfo } from '@/types/api';
+import type { ClientInfo, ChannelInfo, OnlineTrendPoint } from '@/types/api';
 
 function formatUptime(seconds: number): string {
     const days = Math.floor(seconds / 86400);
@@ -50,6 +50,7 @@ export function useTS3Data(refreshInterval = 30000) {
     const [users, setUsers] = useState<User[]>([]);
     const [channels, setChannels] = useState<ChannelInfo[]>([]);
     const [channelCounts, setChannelCounts] = useState<Map<string, number>>(new Map());
+    const [history, setHistory] = useState<OnlineTrendPoint[]>([]);
 
     const fetchData = useCallback(async () => {
         try {
@@ -67,6 +68,7 @@ export function useTS3Data(refreshInterval = 30000) {
             setUsers(mapClientsToUsers(data.clients, data.channels));
             setChannels(data.channels);
             setChannelCounts(calculateRealChannelCounts(data.clients));
+            setHistory(data.history);
             setError(null);
         } catch (err) {
             setError(err instanceof Error ? err.message : '获取数据失败');
@@ -81,5 +83,5 @@ export function useTS3Data(refreshInterval = 30000) {
         return () => clearInterval(interval);
     }, [refreshInterval, fetchData]);
 
-    return { loading, error, stats, users, channels, channelCounts, refetch: fetchData };
+    return { loading, error, stats, users, channels, channelCounts, history, refetch: fetchData };
 }

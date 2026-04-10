@@ -6,6 +6,7 @@ import { Header } from '@/components/sections/Header';
 import { HeroSection } from '@/components/sections/HeroSection';
 import { DownloadSection } from '@/components/sections/DownloadSection';
 import { ChannelList } from '@/components/sections/ChannelList';
+import { OnlineTrendChart } from '@/components/sections/OnlineTrendChart';
 import { UserList } from '@/components/sections/UserList';
 import { Footer } from '@/components/sections/Footer';
 import { FloatingIcons } from '@/components/FloatingIcons';
@@ -18,7 +19,7 @@ interface HomePageClientProps {
 }
 
 export function HomePageClient({ serverConfig }: HomePageClientProps) {
-  const { loading, error, stats, users, channels, channelCounts } = useTS3Data(30000);
+  const { loading, error, stats, users, channels, channelCounts, history } = useTS3Data(30000);
   const [isDarkMode, setIsDarkMode] = useState(false);
 
   useEffect(() => {
@@ -100,6 +101,12 @@ export function HomePageClient({ serverConfig }: HomePageClientProps) {
               <div className="text-xs mt-1 font-medium text-fresh-text-muted">丢包率</div>
             </div>
           </section>
+
+          <OnlineTrendChart
+            loading={loading}
+            history={history}
+            maxSlots={stats.maxSlots}
+          />
 
           {/* Channel + Download - Bento Grid */}
           <section className="grid grid-cols-1 lg:grid-cols-3 gap-6">

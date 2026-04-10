@@ -5,7 +5,7 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.4-38B2AC?logo=tailwind-css)](https://tailwindcss.com/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-为 TeamSpeak 3 服务器打造的现代化实时监控面板，以清晰流畅的界面集中展示服务器状态、在线用户与频道分布，让服务器运行情况一目了然。
+为 TeamSpeak 服务器打造的现代化实时监控面板，以清晰流畅的界面集中展示服务器状态、在线用户与频道分布，让服务器运行情况一目了然，支持传统 TS3 ServerQuery 与 TS6 SSH Query。
 
 ## 预览
 
@@ -28,7 +28,7 @@
 | [Next.js 16](https://nextjs.org/)                                        | React 全栈框架 (App Router) |
 | [TypeScript](https://www.typescriptlang.org/)                            | 类型安全                    |
 | [Tailwind CSS](https://tailwindcss.com/)                                 | 原子化 CSS                  |
-| [ts3-nodejs-library](https://github.com/Multivit4min/TS3-NodeJS-Library) | TS3 ServerQuery 客户端      |
+| [teamspeak.js](https://github.com/teamspeakjs/teamspeak.js)              | TS3 / TS6 ServerQuery 客户端 |
 | [Lucide React](https://lucide.dev/)                                      | 图标库                      |
 | [Recharts](https://recharts.org/)                                        | 图表组件                    |
 
@@ -61,17 +61,19 @@ cp .env.example .env
 # ==========================================
 # 服务端配置 (私有)
 # ==========================================
-# TS3 Server Query 连接
-TS3_SERVER_HOST=your-ts3-server.com    # TS3 服务器地址
-TS3_QUERY_PORT=10011                   # Query 端口 (默认 10011)
-TS3_QUERY_USERNAME=serveradmin         # Query 用户名
-TS3_QUERY_PASSWORD=your-password       # Query 密码
-TS3_SERVER_ID=1                        # 虚拟服务器 ID
-TS3_VIRTUAL_PORT=9987                  # 虚拟服务器端口
+# Query 连接
+TS_SERVER_HOST=your-teamspeak-server.com # TeamSpeak 服务器地址
+TS_QUERY_PROTOCOL=tcp                    # tcp=TS3, ssh=TS6
+TS_QUERY_PORT=10011                      # tcp 默认 10011, ssh 默认 10022
+TS_QUERY_USERNAME=serveradmin            # Query 用户名 / SSH 用户名
+TS_QUERY_PASSWORD=your-password          # Query 密码 / SSH 密码
+TS_QUERY_NICKNAME=WebQuery               # 仅 tcp 模式使用
+TS_SERVER_ID=1                           # TS3 虚拟服务器 ID，优先于虚拟端口
+TS_VIRTUAL_PORT=9987                     # TS3 虚拟服务器端口
 
 # 可选配置
-TS3_CONNECTION_TIMEOUT=30000           # 连接超时 (毫秒)
-TS3_CACHE_TTL=30000                    # 缓存时间 (毫秒)
+TS_CONNECTION_TIMEOUT=30000            # 连接超时 (毫秒)
+TS_CACHE_TTL=30000                     # 缓存时间 (毫秒)
 RATE_LIMIT_WINDOW_MS=60000             # 限流窗口
 RATE_LIMIT_MAX_REQUESTS=30             # 每窗口最大请求数
 
@@ -84,7 +86,12 @@ SERVER_ADDRESS=ts.example.com           # 显示的连接地址
 DISPLAY_CHANNEL_NAMES=大厅,APEX,CS:GO   # 可选：频道白名单，逗号分隔
 ```
 
-说明：页面展示配置在服务运行时读取，适合 Docker 直接使用预构建镜像部署。为了兼容旧配置，`NEXT_PUBLIC_SERVER_*` 仍然可用，但新部署建议改用 `SERVER_*`。
+说明：
+
+- 页面展示配置在服务运行时读取，适合 Docker 直接使用预构建镜像部署。
+- 为了兼容旧配置，`NEXT_PUBLIC_SERVER_*` 仍然可用，但新部署建议改用 `SERVER_*`。
+- 旧的 `TS3_*` 查询环境变量仍然兼容，但新部署建议改用 `TS_*`。
+- `tcp` 模式用于传统 TS3 ServerQuery；`ssh` 模式用于 TS6 Query。
 
 > 避免展示频道中的装饰性频道，建议使用频道白名单
 

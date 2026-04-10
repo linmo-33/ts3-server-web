@@ -34,3 +34,20 @@ export interface ChannelInfo {
   total_clients: number;
   channel_order: string;
 }
+
+/** 在线人数趋势点 */
+export interface OnlineTrendPoint {
+  timestamp: number;
+  onlineCount: number;
+  maxSlots: number;
+  ping: number;
+  packetLoss: number;
+}
+
+/** 聚合接口响应 */
+export interface TS3AllDataResponse {
+  server: ServerInfo;
+  clients: ClientInfo[];
+  channels: ChannelInfo[];
+  history: OnlineTrendPoint[];
+}
