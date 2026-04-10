@@ -6,17 +6,13 @@
 ## Validation
 
 - [ ] `pnpm dev` started successfully
-- [ ] relevant functionality was tested locally
-- [ ] docs were updated if needed
+- [ ] `pnpm lint`
+- [ ] relevant functionality tested locally
 
-## Risk
+## Notes
 
-- Impact scope:
-- Rollback plan:
-
-## Checklist
-
-- [ ] no secrets or local-only files included
 - [ ] `.env.example` updated if env vars changed
 - [ ] screenshots attached if UI changed
-- [ ] breaking changes are clearly noted
+- [ ] breaking changes clearly noted
+
+Risk / rollback:
