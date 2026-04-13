@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import Database from 'better-sqlite3';
 import type { OnlineTrendHistory, OnlineTrendPoint, TrendRangeKey } from '@/types/api';
@@ -6,8 +7,11 @@ import type { OnlineTrendHistory, OnlineTrendPoint, TrendRangeKey } from '@/type
 const SAMPLE_BUCKET_MS = 60 * 1000;
 const DAY_MS = 24 * 60 * 60 * 1000;
 const HISTORY_RETENTION_MS = 8 * DAY_MS;
-const DB_DIR = path.join(process.cwd(), 'data');
-const DB_PATH = path.join(DB_DIR, 'ts3-history.db');
+const DB_FILENAME = 'ts3-history.db';
+const DB_DIR_CANDIDATES = [
+  path.join(process.cwd(), 'data'),
+  path.join(os.tmpdir(), 'ts3-server-hub'),
+];
 
 const HISTORY_RANGES: Record<
   TrendRangeKey,
@@ -33,6 +37,7 @@ type HistoryRow = {
 
 const globalForTs3History = globalThis as typeof globalThis & {
   ts3HistoryDb?: Database.Database;
+  ts3HistoryDbPath?: string;
 };
 
 function ensureDatabase(): Database.Database {
@@ -40,27 +45,51 @@ function ensureDatabase(): Database.Database {
     return globalForTs3History.ts3HistoryDb;
   }
 
-  fs.mkdirSync(DB_DIR, { recursive: true });
+  let lastError: unknown;
 
-  const db = new Database(DB_PATH);
-  db.pragma('journal_mode = WAL');
-  db.pragma('synchronous = NORMAL');
-  db.exec(`
-    CREATE TABLE IF NOT EXISTS ts3_online_trend (
-      timestamp INTEGER PRIMARY KEY,
-      online_count INTEGER NOT NULL,
-      max_slots INTEGER NOT NULL,
-      ping REAL NOT NULL,
-      packet_loss REAL NOT NULL
-    );
-  `);
-  db.exec(`
-    CREATE INDEX IF NOT EXISTS idx_ts3_online_trend_timestamp
-    ON ts3_online_trend(timestamp);
-  `);
+  for (const dbDir of DB_DIR_CANDIDATES) {
+    const dbPath = path.join(dbDir, DB_FILENAME);
 
-  globalForTs3History.ts3HistoryDb = db;
-  return db;
+    try {
+      fs.mkdirSync(dbDir, { recursive: true });
+
+      const db = new Database(dbPath);
+      db.pragma('journal_mode = WAL');
+      db.pragma('synchronous = NORMAL');
+      db.exec(`
+        CREATE TABLE IF NOT EXISTS ts3_online_trend (
+          timestamp INTEGER PRIMARY KEY,
+          online_count INTEGER NOT NULL,
+          max_slots INTEGER NOT NULL,
+          ping REAL NOT NULL,
+          packet_loss REAL NOT NULL
+        );
+      `);
+      db.exec(`
+        CREATE INDEX IF NOT EXISTS idx_ts3_online_trend_timestamp
+        ON ts3_online_trend(timestamp);
+      `);
+
+      globalForTs3History.ts3HistoryDb = db;
+      globalForTs3History.ts3HistoryDbPath = dbPath;
+
+      if (dbDir !== DB_DIR_CANDIDATES[0]) {
+        console.warn(
+          `TS3 trend storage fell back to temporary directory: ${dbPath}`
+        );
+      }
+
+      return db;
+    } catch (error) {
+      lastError = error;
+      console.warn(
+        `TS3 trend storage unavailable at ${dbPath}, trying next location.`,
+        error
+      );
+    }
+  }
+
+  throw lastError;
 }
 
 function getBucketOffsetMs(bucketMs: number) {
