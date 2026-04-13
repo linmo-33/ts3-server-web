@@ -9,6 +9,7 @@
     "lint": "eslint . --max-warnings=0"
   },
   "dependencies": {
+    "better-sqlite3": "^12.9.0",
     "clsx": "^2.1.0",
     "lucide-react": "1.8.0",
     "next": "16.0.8",
@@ -19,6 +20,7 @@
     "teamspeak.js": "^1.11.2"
   },
   "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
     "@types/node": "^22.10.2",
     "@types/react": "^18.3.17",
     "@types/react-dom": "^18.3.5",
@@ -29,6 +31,11 @@
     "postcss": "^8.4.35",
     "tailwindcss": "^3.4.1",
     "typescript": "^5.2.2"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "better-sqlite3"
+    ]
   },
   "packageManager": "pnpm@10.24.0+sha512.01ff8ae71b4419903b65c60fb2dc9d34cf8bb6e06d03bde112ef38f7a34d6904c424ba66bea5cdcf12890230bf39f9580473140ed9c946fef328b6e5238a345a"
 }

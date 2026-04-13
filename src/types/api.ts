@@ -42,10 +42,14 @@ export interface OnlineTrendPoint {
   packetLoss: number;
 }
 
+export type TrendRangeKey = '24h' | '7d';
+
+export type OnlineTrendHistory = Record<TrendRangeKey, OnlineTrendPoint[]>;
+
 /** 聚合接口响应 */
 export interface TS3AllDataResponse {
   server: ServerInfo;
   clients: ClientInfo[];
   channels: ChannelInfo[];
-  history: OnlineTrendPoint[];
+  history: OnlineTrendHistory;
 }
