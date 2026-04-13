@@ -1,48 +1,139 @@
-import type { OnlineTrendPoint } from '@/types/api';
+import fs from 'node:fs';
+import path from 'node:path';
+import Database from 'better-sqlite3';
+import type { OnlineTrendHistory, OnlineTrendPoint, TrendRangeKey } from '@/types/api';
 
-const HISTORY_WINDOW_MS = 24 * 60 * 60 * 1000;
-const HISTORY_BUCKET_MS = 60 * 1000;
+const SAMPLE_BUCKET_MS = 60 * 1000;
+const DAY_MS = 24 * 60 * 60 * 1000;
+const HISTORY_RETENTION_MS = 8 * DAY_MS;
+const DB_DIR = path.join(process.cwd(), 'data');
+const DB_PATH = path.join(DB_DIR, 'ts3-history.db');
 
-const globalForTs3History = globalThis as typeof globalThis & {
-  ts3OnlineTrendHistory?: OnlineTrendPoint[];
+const HISTORY_RANGES: Record<
+  TrendRangeKey,
+  { bucketMs: number; durationMs: number }
+> = {
+  '24h': {
+    bucketMs: 60 * 60 * 1000,
+    durationMs: DAY_MS,
+  },
+  '7d': {
+    bucketMs: DAY_MS,
+    durationMs: 7 * DAY_MS,
+  },
 };
 
-globalForTs3History.ts3OnlineTrendHistory = globalForTs3History.ts3OnlineTrendHistory ?? [];
+type HistoryRow = {
+  bucket_timestamp: number;
+  online_count: number;
+  max_slots: number;
+  ping: number;
+  packet_loss: number;
+};
 
-function getHistoryStore(): OnlineTrendPoint[] {
-  if (!globalForTs3History.ts3OnlineTrendHistory) {
-    globalForTs3History.ts3OnlineTrendHistory = [];
+const globalForTs3History = globalThis as typeof globalThis & {
+  ts3HistoryDb?: Database.Database;
+};
+
+function ensureDatabase(): Database.Database {
+  if (globalForTs3History.ts3HistoryDb) {
+    return globalForTs3History.ts3HistoryDb;
   }
 
-  return globalForTs3History.ts3OnlineTrendHistory;
+  fs.mkdirSync(DB_DIR, { recursive: true });
+
+  const db = new Database(DB_PATH);
+  db.pragma('journal_mode = WAL');
+  db.pragma('synchronous = NORMAL');
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS ts3_online_trend (
+      timestamp INTEGER PRIMARY KEY,
+      online_count INTEGER NOT NULL,
+      max_slots INTEGER NOT NULL,
+      ping REAL NOT NULL,
+      packet_loss REAL NOT NULL
+    );
+  `);
+  db.exec(`
+    CREATE INDEX IF NOT EXISTS idx_ts3_online_trend_timestamp
+    ON ts3_online_trend(timestamp);
+  `);
+
+  globalForTs3History.ts3HistoryDb = db;
+  return db;
 }
 
-function pruneHistory(now: number) {
-  const cutoff = now - HISTORY_WINDOW_MS;
-  globalForTs3History.ts3OnlineTrendHistory = getHistoryStore().filter((point) => point.timestamp >= cutoff);
+function getBucketOffsetMs(bucketMs: number) {
+  if (bucketMs < DAY_MS) {
+    return 0;
+  }
+
+  return -new Date().getTimezoneOffset() * 60 * 1000;
+}
+
+function mapHistoryRow(row: HistoryRow): OnlineTrendPoint {
+  return {
+    timestamp: row.bucket_timestamp,
+    onlineCount: row.online_count,
+    maxSlots: row.max_slots,
+    ping: row.ping,
+    packetLoss: row.packet_loss,
+  };
 }
 
 export function recordOnlineTrendPoint(point: OnlineTrendPoint) {
-  const bucketTimestamp = Math.floor(point.timestamp / HISTORY_BUCKET_MS) * HISTORY_BUCKET_MS;
-  const normalizedPoint: OnlineTrendPoint = {
-    ...point,
+  const db = ensureDatabase();
+  const bucketTimestamp = Math.floor(point.timestamp / SAMPLE_BUCKET_MS) * SAMPLE_BUCKET_MS;
+  const cutoff = bucketTimestamp - HISTORY_RETENTION_MS;
+
+  db.prepare(`
+    INSERT INTO ts3_online_trend (timestamp, online_count, max_slots, ping, packet_loss)
+    VALUES (@timestamp, @onlineCount, @maxSlots, @ping, @packetLoss)
+    ON CONFLICT(timestamp) DO UPDATE SET
+      online_count = excluded.online_count,
+      max_slots = excluded.max_slots,
+      ping = excluded.ping,
+      packet_loss = excluded.packet_loss
+  `).run({
     timestamp: bucketTimestamp,
-  };
+    onlineCount: point.onlineCount,
+    maxSlots: point.maxSlots,
+    ping: point.ping,
+    packetLoss: point.packetLoss,
+  });
 
-  pruneHistory(bucketTimestamp);
-
-  const history = getHistoryStore();
-  const lastPoint = history.at(-1);
-
-  if (lastPoint && lastPoint.timestamp === bucketTimestamp) {
-    history[history.length - 1] = normalizedPoint;
-    return;
-  }
-
-  history.push(normalizedPoint);
+  db.prepare('DELETE FROM ts3_online_trend WHERE timestamp < ?').run(cutoff);
 }
 
-export function getOnlineTrendHistory() {
-  pruneHistory(Date.now());
-  return [...getHistoryStore()];
+function getHistoryForRange(range: TrendRangeKey): OnlineTrendPoint[] {
+  const db = ensureDatabase();
+  const { bucketMs, durationMs } = HISTORY_RANGES[range];
+  const cutoff = Date.now() - durationMs;
+  const bucketOffsetMs = getBucketOffsetMs(bucketMs);
+
+  const rows = db.prepare(`
+    SELECT
+      CAST(((timestamp + @bucketOffsetMs) / @bucketMs) AS INTEGER) * @bucketMs - @bucketOffsetMs AS bucket_timestamp,
+      CAST(ROUND(AVG(online_count), 0) AS INTEGER) AS online_count,
+      CAST(MAX(max_slots) AS INTEGER) AS max_slots,
+      ROUND(AVG(ping), 2) AS ping,
+      ROUND(AVG(packet_loss), 2) AS packet_loss
+    FROM ts3_online_trend
+    WHERE timestamp >= @cutoff
+    GROUP BY bucket_timestamp
+    ORDER BY bucket_timestamp ASC
+  `).all({
+    bucketMs,
+    bucketOffsetMs,
+    cutoff,
+  }) as HistoryRow[];
+
+  return rows.map(mapHistoryRow);
+}
+
+export function getOnlineTrendHistory(): OnlineTrendHistory {
+  return {
+    '24h': getHistoryForRange('24h'),
+    '7d': getHistoryForRange('7d'),
+  };
 }

@@ -1,24 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getServerInfo, getClientList, getChannelList } from '@/lib/ts3-query';
-import { getOnlineTrendHistory, recordOnlineTrendPoint } from '@/lib/ts3-history';
 import { checkRateLimit } from '@/lib/rate-limit';
-import type { ServerInfo, ClientInfo, ChannelInfo, TS3AllDataResponse } from '@/types/api';
-
-// 统一缓存
-let allDataCache: { data: TS3AllDataResponse; timestamp: number } | null = null;
-
-function getCacheTTL(): number {
-  return parseInt(process.env.TS_CACHE_TTL || process.env.TS3_CACHE_TTL || '10000');
-}
+import { ensureTS3SamplerStarted, refreshTS3Data } from '@/lib/ts3-data';
 
 function shouldTrustProxyHeaders(): boolean {
   return ['1', 'true', 'yes', 'on'].includes(
     (process.env.TRUST_PROXY_HEADERS || 'false').trim().toLowerCase()
   );
-}
-
-function isCacheValid(): boolean {
-  return allDataCache ? Date.now() - allDataCache.timestamp < getCacheTTL() : false;
 }
 
 function createRequestFingerprint(request: NextRequest): string {
@@ -57,65 +44,9 @@ function getRateLimitKey(request: NextRequest): string {
   return createRequestFingerprint(request);
 }
 
-async function fetchAllData(): Promise<TS3AllDataResponse> {
-  // 如果缓存有效，直接返回
-  if (isCacheValid() && allDataCache) {
-    return allDataCache.data;
-  }
-
-  // 串行获取数据（避免并发连接问题）
-  const serverInfoRaw = await getServerInfo();
-  const clientsRaw = await getClientList();
-  const channelsRaw = await getChannelList();
-
-  const server: ServerInfo = {
-    virtualserver_name: serverInfoRaw.virtualserver_name,
-    virtualserver_clientsonline: serverInfoRaw.virtualserver_clientsonline,
-    virtualserver_maxclients: serverInfoRaw.virtualserver_maxclients,
-    virtualserver_uptime: Number(serverInfoRaw.virtualserver_uptime) || 0,
-    virtualserver_ping: Number(serverInfoRaw.virtualserver_ping) || 0,
-    virtualserver_packetloss_speech: Number(serverInfoRaw.virtualserver_packetloss_speech) || 0,
-  };
-
-  const clients: ClientInfo[] = clientsRaw.map((c) => ({
-    clid: c.clid,
-    client_nickname: c.client_nickname,
-    connection_client_ip: '',
-    client_channel_id: c.client_channel_id,
-    client_type: c.client_type,
-    client_away: c.client_away,
-    client_output_muted: c.client_output_muted,
-  }));
-
-  const channels: ChannelInfo[] = channelsRaw.map((c) => ({
-    cid: c.cid,
-    channel_name: c.channel_name,
-    channel_is_spacer: c.channel_is_spacer,
-    channel_maxclients: c.channel_maxclients,
-    total_clients: c.total_clients,
-    channel_order: c.channel_order,
-  }));
-
-  recordOnlineTrendPoint({
-    timestamp: Date.now(),
-    onlineCount: clients.length,
-    maxSlots: server.virtualserver_maxclients,
-    ping: server.virtualserver_ping,
-    packetLoss: server.virtualserver_packetloss_speech,
-  });
-
-  const data: TS3AllDataResponse = {
-    server,
-    clients,
-    channels,
-    history: getOnlineTrendHistory(),
-  };
-
-  allDataCache = { data, timestamp: Date.now() };
-  return data;
-}
-
 export async function GET(request: NextRequest) {
+  ensureTS3SamplerStarted();
+
   const rateLimitKey = getRateLimitKey(request);
   const { allowed, remaining } = checkRateLimit(rateLimitKey);
 
@@ -134,7 +65,7 @@ export async function GET(request: NextRequest) {
   };
 
   try {
-    const allData = await fetchAllData();
+    const allData = await refreshTS3Data();
 
     const { searchParams } = new URL(request.url);
     const type = searchParams.get('type');

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { ts3Api } from '@/lib/api';
 import type { ServerStats, User } from '@/types';
-import type { ClientInfo, ChannelInfo, OnlineTrendPoint } from '@/types/api';
+import type { ClientInfo, ChannelInfo, OnlineTrendHistory } from '@/types/api';
 
 function formatUptime(seconds: number): string {
     const days = Math.floor(seconds / 86400);
@@ -50,7 +50,10 @@ export function useTS3Data(refreshInterval = 30000) {
     const [users, setUsers] = useState<User[]>([]);
     const [channels, setChannels] = useState<ChannelInfo[]>([]);
     const [channelCounts, setChannelCounts] = useState<Map<string, number>>(new Map());
-    const [history, setHistory] = useState<OnlineTrendPoint[]>([]);
+    const [history, setHistory] = useState<OnlineTrendHistory>({
+        '24h': [],
+        '7d': [],
+    });
 
     const fetchData = useCallback(async () => {
         try {

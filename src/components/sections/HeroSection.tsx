@@ -6,8 +6,25 @@ interface HeroSectionProps {
   serverConfig: ServerConfig;
 }
 
+const HERO_MESSAGES = [
+  { lead: "you can you up，", accent: "别光看" },
+  { lead: "游戏可以输，", accent: "气场不能输" },
+  { lead: "队友已躺，", accent: "该你carry了" },
+  { lead: "咳咳咳咳，", accent: "让我讲两句" },
+  { lead: "菜归菜，", accent: "谁不能来两把" },
+];
+
 export const HeroSection: React.FC<HeroSectionProps> = ({ serverConfig }) => {
   const [copied, setCopied] = React.useState(false);
+  const [messageIndex, setMessageIndex] = React.useState(0);
+
+  React.useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      setMessageIndex((current) => (current + 1) % HERO_MESSAGES.length);
+    }, 4000);
+
+    return () => window.clearInterval(intervalId);
+  }, []);
 
   const handleConnect = () => {
     window.location.href = `ts3server://${serverConfig.address}`;
@@ -18,6 +35,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ serverConfig }) => {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
+
+  const currentMessage = HERO_MESSAGES[messageIndex];
 
   return (
     <section className="w-full">
@@ -39,9 +58,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ serverConfig }) => {
               <span className="text-xs font-bold">开黑集结</span>
             </div>
 
-            <h2 className="text-3xl md:text-4xl font-black mb-3 text-fresh-text leading-tight">
-              黑夜降临，
-              <span className="gradient-text">该你登场了!</span>
+            <h2 className="text-3xl md:text-4xl font-black mb-3 text-fresh-text leading-tight whitespace-nowrap overflow-hidden text-ellipsis">
+              <span>{currentMessage.lead}</span>
+              <span className="gradient-text">{currentMessage.accent}</span>
             </h2>
 
             <p className="text-base mb-6 text-fresh-text-secondary">
@@ -68,7 +87,9 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ serverConfig }) => {
             <div className="flex flex-wrap items-center gap-3">
               <code
                 className="theme-input px-4 py-2.5 text-sm font-bold"
-                style={{ fontFamily: "var(--font-fredoka), Fredoka, sans-serif" }}
+                style={{
+                  fontFamily: "var(--font-fredoka), Fredoka, sans-serif",
+                }}
               >
                 {serverConfig.address}
               </code>

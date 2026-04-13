@@ -14,6 +14,7 @@
 ## 功能特性
 
 - **实时监控** - 在线人数、延迟、丢包率等服务器状态
+- **趋势留存** - 在线趋势持久化保存，支持查看 24 小时与最近 7 天
 - **用户列表** - 展示当前在线用户及其频道信息
 - **频道列表** - 展示频道人数、容量与占用情况
 - **主题切换** - 支持浅色与暗色主题自由切换
@@ -31,6 +32,7 @@
 | [teamspeak.js](https://github.com/teamspeakjs/teamspeak.js)              | TS3 / TS6 ServerQuery 客户端 |
 | [Lucide React](https://lucide.dev/)                                      | 图标库                      |
 | [Recharts](https://recharts.org/)                                        | 图表组件                    |
+| [better-sqlite3](https://github.com/WiseLibs/better-sqlite3)             | 趋势数据持久化存储          |
 
 ## 快速开始
 
@@ -91,6 +93,7 @@ DISPLAY_CHANNEL_NAMES=大厅,APEX,CS:GO   # 可选：频道白名单，逗号分
 说明：
 
 - 页面展示配置在服务运行时读取，适合 Docker 直接使用预构建镜像部署。
+- 在线趋势默认由服务端后台每分钟采样一次，在 Docker / Node 常驻进程部署下不再依赖页面访问；Serverless 部署建议配合外部 cron。
 - 为了兼容旧配置，`NEXT_PUBLIC_SERVER_*` 仍然可用，但新部署建议改用 `SERVER_*`。
 - 旧的 `TS3_*` 查询环境变量仍然兼容，但新部署建议改用 `TS_*`。
 - `tcp` 模式用于传统 TS3 ServerQuery；`ssh` 模式用于 TS6 Query。
@@ -150,6 +153,7 @@ docker compose up -d
 ```
 
 `SERVER_*` 页面展示配置会在容器启动后由服务端运行时读取，不需要重新构建镜像。
+趋势数据库默认保存在容器内的 `/app/data/ts3-history.db`，示例 compose 已将其挂载到宿主机 `./data`。
 
 4. 查看运行状态与日志：
 

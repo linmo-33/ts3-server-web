@@ -11,37 +11,83 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import type { OnlineTrendPoint } from '@/types/api';
-
-type RangeKey = '30m' | '6h' | '24h';
+import type { OnlineTrendHistory, TrendRangeKey } from '@/types/api';
 
 interface OnlineTrendChartProps {
   loading: boolean;
-  history: OnlineTrendPoint[];
+  history: OnlineTrendHistory;
   maxSlots: number;
 }
 
-const RANGE_OPTIONS: { key: RangeKey; label: string; durationMs: number }[] = [
-  { key: '30m', label: '30分钟', durationMs: 30 * 60 * 1000 },
-  { key: '6h', label: '6小时', durationMs: 6 * 60 * 60 * 1000 },
-  { key: '24h', label: '24小时', durationMs: 24 * 60 * 60 * 1000 },
+const RANGE_OPTIONS: {
+  key: TrendRangeKey;
+  label: string;
+  bucketLabel: string;
+}[] = [
+  { key: '24h', label: '24小时', bucketLabel: '按小时聚合' },
+  { key: '7d', label: '最近7天', bucketLabel: '按天聚合' },
 ];
 
-function formatTimeLabel(timestamp: number, range: RangeKey) {
+function formatTimeLabel(timestamp: number, range: TrendRangeKey) {
   return new Intl.DateTimeFormat('zh-CN', {
-    hour: '2-digit',
-    minute: '2-digit',
-    ...(range === '24h' ? { month: 'numeric', day: 'numeric' } : {}),
+    ...(range === '24h'
+      ? {
+          hour: '2-digit',
+          minute: '2-digit',
+        }
+      : {
+          month: 'numeric',
+          day: 'numeric',
+        }),
   }).format(new Date(timestamp));
 }
 
-function formatTooltipLabel(timestamp: number) {
+function formatTooltipLabel(timestamp: number, range: TrendRangeKey) {
   return new Intl.DateTimeFormat('zh-CN', {
-    month: 'numeric',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
+    ...(range === '24h'
+      ? {
+          month: 'numeric',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        }
+      : {
+          year: 'numeric',
+          month: 'numeric',
+          day: 'numeric',
+        }),
   }).format(new Date(timestamp));
+}
+
+function formatLatestUpdate(timestamp: number, range: TrendRangeKey) {
+  return new Intl.DateTimeFormat('zh-CN', {
+    ...(range === '24h'
+      ? {
+          month: 'numeric',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        }
+      : {
+          year: 'numeric',
+          month: 'numeric',
+          day: 'numeric',
+        }),
+  }).format(new Date(timestamp));
+}
+
+function getYAxisMax(peakOnline: number, maxSlots: number) {
+  const paddedPeak = peakOnline <= 0
+    ? 5
+    : peakOnline <= 4
+      ? peakOnline + 2
+      : Math.ceil(peakOnline * 1.2);
+
+  if (maxSlots > 0) {
+    return Math.max(1, Math.min(maxSlots, paddedPeak));
+  }
+
+  return Math.max(1, paddedPeak);
 }
 
 export function OnlineTrendChart({
@@ -49,15 +95,17 @@ export function OnlineTrendChart({
   history,
   maxSlots,
 }: OnlineTrendChartProps) {
-  const [range, setRange] = useState<RangeKey>('6h');
-  const selectedRange = RANGE_OPTIONS.find((option) => option.key === range) ?? RANGE_OPTIONS[1];
-  const cutoff = Date.now() - selectedRange.durationMs;
-  const filteredHistory = history.filter((point) => point.timestamp >= cutoff);
+  const [range, setRange] = useState<TrendRangeKey>('24h');
+  const selectedRange = RANGE_OPTIONS.find((option) => option.key === range) ?? RANGE_OPTIONS[0];
+  const selectedHistory = history[range] ?? [];
+  const filteredHistory = [...selectedHistory]
+    .sort((left, right) => left.timestamp - right.timestamp);
   const chartData = filteredHistory.map((point) => ({
     ...point,
-    label: formatTimeLabel(point.timestamp, range),
     utilization: point.maxSlots > 0 ? Math.round((point.onlineCount / point.maxSlots) * 100) : 0,
   }));
+  const startTimestamp = filteredHistory[0]?.timestamp ?? Date.now();
+  const endTimestamp = filteredHistory.at(-1)?.timestamp ?? Date.now();
 
   const peakOnline = filteredHistory.reduce(
     (peak, point) => Math.max(peak, point.onlineCount),
@@ -72,14 +120,14 @@ export function OnlineTrendChart({
       )
     : 0;
   const fluctuation = Math.max(peakOnline - lowestOnline, 0);
-  const latestPoint = filteredHistory.at(-1) ?? history.at(-1) ?? null;
+  const latestPoint = filteredHistory.at(-1) ?? null;
+  const yAxisMax = getYAxisMax(peakOnline, maxSlots);
   const latestUpdateText = latestPoint
-    ? new Intl.DateTimeFormat('zh-CN', {
-        hour: '2-digit',
-        minute: '2-digit',
-      }).format(new Date(latestPoint.timestamp))
+    ? formatLatestUpdate(latestPoint.timestamp, range)
     : '--:--';
-  const summaryText = `峰值 ${peakOnline} · 平均 ${averageOnline} · 波动 ${fluctuation}`;
+  const summaryPrefix = range === '24h' ? '小时' : '日';
+  const latestUpdatePrefix = range === '24h' ? '更新于' : '统计至';
+  const summaryText = `${summaryPrefix}峰值 ${peakOnline} · ${summaryPrefix}均值 ${averageOnline} · 波动 ${fluctuation}`;
 
   return (
     <section className="w-full trend-panel">
@@ -138,7 +186,7 @@ export function OnlineTrendChart({
                 <p className="text-sm font-medium">趋势数据加载中...</p>
               </div>
             </div>
-          ) : chartData.length < 2 ? (
+          ) : filteredHistory.length < 2 ? (
             <div className="h-[260px] flex items-center justify-center text-fresh-text-muted">
               <div className="text-center">
                 <TrendingUp size={28} className="mx-auto mb-3 opacity-50" />
@@ -150,10 +198,10 @@ export function OnlineTrendChart({
             <div className="h-[260px] md:h-[300px]">
               <div className="flex items-center justify-between mb-3 px-1">
                 <span className="text-xs font-medium text-fresh-text-muted">
-                  按分钟聚合，保留最近 24 小时
+                  {selectedRange.bucketLabel}
                 </span>
                 <span className="text-xs font-medium text-fresh-text-muted">
-                  更新于 {latestUpdateText}
+                  {latestUpdatePrefix} {latestUpdateText}
                 </span>
               </div>
               <div className="mb-3 px-1 text-xs font-medium text-fresh-text-muted">
@@ -176,10 +224,14 @@ export function OnlineTrendChart({
                     vertical={false}
                   />
                   <XAxis
-                    dataKey="label"
+                    dataKey="timestamp"
+                    type="number"
+                    scale="time"
+                    domain={[startTimestamp, endTimestamp]}
                     tickLine={false}
                     axisLine={false}
                     minTickGap={20}
+                    tickFormatter={(value) => formatTimeLabel(Number(value), range)}
                     tick={{ fill: 'var(--theme-text-muted)', fontSize: 12, fontWeight: 600 }}
                   />
                   <YAxis
@@ -187,7 +239,8 @@ export function OnlineTrendChart({
                     tickLine={false}
                     axisLine={false}
                     width={34}
-                    domain={[0, (dataMax: number) => Math.max(maxSlots, dataMax, 1)]}
+                    domain={[0, yAxisMax]}
+                    padding={{ top: 8, bottom: 12 }}
                     tick={{ fill: 'var(--theme-text-muted)', fontSize: 12, fontWeight: 600 }}
                   />
                   <Tooltip
@@ -199,10 +252,7 @@ export function OnlineTrendChart({
                       boxShadow: '4px 4px 0px var(--theme-ink)',
                       padding: '0.75rem',
                     }}
-                    labelFormatter={(_label, payload) => {
-                      const current = payload?.[0]?.payload;
-                      return current ? formatTooltipLabel(current.timestamp) : '';
-                    }}
+                    labelFormatter={(value) => formatTooltipLabel(Number(value), range)}
                   />
                   <Area
                     type="monotone"
@@ -211,6 +261,7 @@ export function OnlineTrendChart({
                     stroke="#16A34A"
                     strokeWidth={3}
                     fill="url(#onlineTrendFill)"
+                    connectNulls
                     activeDot={{
                       r: 5,
                       stroke: 'var(--theme-ink)',
