@@ -4,9 +4,10 @@ import type { ServerConfig } from "@/types";
 
 interface FooterProps {
   serverConfig: ServerConfig;
+  appVersion: string;
 }
 
-export const Footer: React.FC<FooterProps> = ({ serverConfig }) => {
+export const Footer: React.FC<FooterProps> = ({ serverConfig, appVersion }) => {
   const currentYear = new Date().getFullYear();
 
   return (
@@ -27,6 +28,9 @@ export const Footer: React.FC<FooterProps> = ({ serverConfig }) => {
           >
             Linmo33
           </a>
+        </p>
+        <p className="text-xs uppercase tracking-[0.24em] text-fresh-text-muted/80">
+          Version {appVersion}
         </p>
       </div>
     </footer>

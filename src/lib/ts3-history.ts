@@ -15,15 +15,17 @@ const DB_DIR_CANDIDATES = [
 
 const HISTORY_RANGES: Record<
   TrendRangeKey,
-  { bucketMs: number; durationMs: number }
+  { bucketMs: number; durationMs: number; onlineCountMode: 'last' | 'peak' }
 > = {
   '24h': {
     bucketMs: 60 * 60 * 1000,
     durationMs: DAY_MS,
+    onlineCountMode: 'last',
   },
   '7d': {
     bucketMs: DAY_MS,
     durationMs: 7 * DAY_MS,
+    onlineCountMode: 'peak',
   },
 };
 
@@ -100,6 +102,14 @@ function getBucketOffsetMs(bucketMs: number) {
   return -new Date().getTimezoneOffset() * 60 * 1000;
 }
 
+function alignToBucketStart(
+  timestamp: number,
+  bucketMs: number,
+  bucketOffsetMs: number
+) {
+  return Math.floor((timestamp + bucketOffsetMs) / bucketMs) * bucketMs - bucketOffsetMs;
+}
+
 function mapHistoryRow(row: HistoryRow): OnlineTrendPoint {
   return {
     timestamp: row.bucket_timestamp,
@@ -136,26 +146,61 @@ export function recordOnlineTrendPoint(point: OnlineTrendPoint) {
 
 function getHistoryForRange(range: TrendRangeKey): OnlineTrendPoint[] {
   const db = ensureDatabase();
-  const { bucketMs, durationMs } = HISTORY_RANGES[range];
-  const cutoff = Date.now() - durationMs;
+  const { bucketMs, durationMs, onlineCountMode } = HISTORY_RANGES[range];
   const bucketOffsetMs = getBucketOffsetMs(bucketMs);
-
-  const rows = db.prepare(`
-    SELECT
-      CAST(((timestamp + @bucketOffsetMs) / @bucketMs) AS INTEGER) * @bucketMs - @bucketOffsetMs AS bucket_timestamp,
-      CAST(ROUND(AVG(online_count), 0) AS INTEGER) AS online_count,
-      CAST(MAX(max_slots) AS INTEGER) AS max_slots,
-      ROUND(AVG(ping), 2) AS ping,
-      ROUND(AVG(packet_loss), 2) AS packet_loss
-    FROM ts3_online_trend
-    WHERE timestamp >= @cutoff
-    GROUP BY bucket_timestamp
-    ORDER BY bucket_timestamp ASC
-  `).all({
-    bucketMs,
-    bucketOffsetMs,
-    cutoff,
-  }) as HistoryRow[];
+  const cutoff = alignToBucketStart(Date.now() - durationMs, bucketMs, bucketOffsetMs);
+  const rows = onlineCountMode === 'last'
+    ? db.prepare(`
+        WITH bucketed AS (
+          SELECT
+            timestamp,
+            online_count,
+            max_slots,
+            ping,
+            packet_loss,
+            CAST(((timestamp + @bucketOffsetMs) / @bucketMs) AS INTEGER) * @bucketMs - @bucketOffsetMs AS bucket_timestamp
+          FROM ts3_online_trend
+          WHERE timestamp >= @cutoff
+        ),
+        latest_per_bucket AS (
+          SELECT
+            bucket_timestamp,
+            MAX(timestamp) AS latest_timestamp
+          FROM bucketed
+          GROUP BY bucket_timestamp
+        )
+        SELECT
+          bucketed.bucket_timestamp,
+          bucketed.online_count,
+          bucketed.max_slots,
+          bucketed.ping,
+          bucketed.packet_loss
+        FROM bucketed
+        INNER JOIN latest_per_bucket
+          ON bucketed.bucket_timestamp = latest_per_bucket.bucket_timestamp
+         AND bucketed.timestamp = latest_per_bucket.latest_timestamp
+        ORDER BY bucketed.bucket_timestamp ASC
+      `).all({
+        bucketMs,
+        bucketOffsetMs,
+        cutoff,
+      })
+    : db.prepare(`
+        SELECT
+          CAST(((timestamp + @bucketOffsetMs) / @bucketMs) AS INTEGER) * @bucketMs - @bucketOffsetMs AS bucket_timestamp,
+          CAST(MAX(online_count) AS INTEGER) AS online_count,
+          CAST(MAX(max_slots) AS INTEGER) AS max_slots,
+          ROUND(AVG(ping), 2) AS ping,
+          ROUND(AVG(packet_loss), 2) AS packet_loss
+        FROM ts3_online_trend
+        WHERE timestamp >= @cutoff
+        GROUP BY bucket_timestamp
+        ORDER BY bucket_timestamp ASC
+      `).all({
+        bucketMs,
+        bucketOffsetMs,
+        cutoff,
+      }) as HistoryRow[];
 
   return rows.map(mapHistoryRow);
 }
