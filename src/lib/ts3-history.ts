@@ -149,7 +149,7 @@ function getHistoryForRange(range: TrendRangeKey): OnlineTrendPoint[] {
   const { bucketMs, durationMs, onlineCountMode } = HISTORY_RANGES[range];
   const bucketOffsetMs = getBucketOffsetMs(bucketMs);
   const cutoff = alignToBucketStart(Date.now() - durationMs, bucketMs, bucketOffsetMs);
-  const rows = onlineCountMode === 'last'
+  const rows: HistoryRow[] = onlineCountMode === 'last'
     ? db.prepare(`
         WITH bucketed AS (
           SELECT
@@ -184,7 +184,7 @@ function getHistoryForRange(range: TrendRangeKey): OnlineTrendPoint[] {
         bucketMs,
         bucketOffsetMs,
         cutoff,
-      })
+      }) as HistoryRow[]
     : db.prepare(`
         SELECT
           CAST(((timestamp + @bucketOffsetMs) / @bucketMs) AS INTEGER) * @bucketMs - @bucketOffsetMs AS bucket_timestamp,
