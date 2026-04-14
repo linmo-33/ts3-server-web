@@ -23,9 +23,10 @@ const RANGE_OPTIONS: {
   key: TrendRangeKey;
   label: string;
   bucketLabel: string;
+  bucketMs: number;
 }[] = [
-  { key: '24h', label: '24小时', bucketLabel: '按小时聚合' },
-  { key: '7d', label: '最近7天', bucketLabel: '按天聚合' },
+  { key: '24h', label: '24小时', bucketLabel: '按小时聚合', bucketMs: 60 * 60 * 1000 },
+  { key: '7d', label: '最近7天', bucketLabel: '按天聚合', bucketMs: 24 * 60 * 60 * 1000 },
 ];
 
 function formatTimeLabel(timestamp: number, range: TrendRangeKey) {
@@ -104,8 +105,13 @@ export function OnlineTrendChart({
     ...point,
     utilization: point.maxSlots > 0 ? Math.round((point.onlineCount / point.maxSlots) * 100) : 0,
   }));
-  const startTimestamp = filteredHistory[0]?.timestamp ?? Date.now();
-  const endTimestamp = filteredHistory.at(-1)?.timestamp ?? Date.now();
+  const singlePointPadding = selectedRange.bucketMs / 2;
+  const startTimestamp = filteredHistory.length === 1
+    ? filteredHistory[0].timestamp - singlePointPadding
+    : filteredHistory[0]?.timestamp ?? Date.now();
+  const endTimestamp = filteredHistory.length === 1
+    ? filteredHistory[0].timestamp + singlePointPadding
+    : filteredHistory.at(-1)?.timestamp ?? Date.now();
 
   const peakOnline = filteredHistory.reduce(
     (peak, point) => Math.max(peak, point.onlineCount),
@@ -186,12 +192,12 @@ export function OnlineTrendChart({
                 <p className="text-sm font-medium">趋势数据加载中...</p>
               </div>
             </div>
-          ) : filteredHistory.length < 2 ? (
+          ) : filteredHistory.length === 0 ? (
             <div className="h-[260px] flex items-center justify-center text-fresh-text-muted">
               <div className="text-center">
                 <TrendingUp size={28} className="mx-auto mb-3 opacity-50" />
                 <p className="text-sm font-medium">趋势数据积累中</p>
-                <p className="text-xs mt-1">至少需要两个采样点才能绘制曲线</p>
+                <p className="text-xs mt-1">当前时间范围内还没有可展示的采样数据</p>
               </div>
             </div>
           ) : (
@@ -262,10 +268,16 @@ export function OnlineTrendChart({
                     strokeWidth={3}
                     fill="url(#onlineTrendFill)"
                     connectNulls
+                    dot={chartData.length === 1 ? {
+                      r: 5,
+                      stroke: '#22C55E',
+                      strokeWidth: 0,
+                      fill: '#22C55E',
+                    } : false}
                     activeDot={{
                       r: 5,
-                      stroke: 'var(--theme-ink)',
-                      strokeWidth: 2,
+                      stroke: '#22C55E',
+                      strokeWidth: 0,
                       fill: '#22C55E',
                     }}
                   />

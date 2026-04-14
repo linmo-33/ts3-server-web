@@ -16,9 +16,10 @@ import type { ServerConfig } from '@/types';
 
 interface HomePageClientProps {
   serverConfig: ServerConfig;
+  appVersion: string;
 }
 
-export function HomePageClient({ serverConfig }: HomePageClientProps) {
+export function HomePageClient({ serverConfig, appVersion }: HomePageClientProps) {
   const { loading, error, stats, users, channels, channelCounts, history } = useTS3Data(30000);
   const [isDarkMode, setIsDarkMode] = useState(false);
 
@@ -121,7 +122,7 @@ export function HomePageClient({ serverConfig }: HomePageClientProps) {
           {/* Users - Full Width */}
           <UserList loading={loading} users={users} />
 
-          <Footer serverConfig={serverConfig} />
+          <Footer serverConfig={serverConfig} appVersion={appVersion} />
         </div>
       </div>
     </div>
