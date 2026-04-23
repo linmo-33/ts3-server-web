@@ -21,6 +21,7 @@ export interface ClientInfo {
   client_type: string;
   client_away: string;
   client_output_muted: string;
+  client_input_muted: string;
 }
 
 /** 频道信息 */

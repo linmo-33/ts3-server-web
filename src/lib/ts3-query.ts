@@ -260,6 +260,7 @@ export async function getClientList() {
       client_type: client.client_type,
       client_away: client.client_away ?? '0',
       client_output_muted: client.client_output_muted ?? '0',
+      client_input_muted: client.client_input_muted ?? '0',
     }));
 }
 

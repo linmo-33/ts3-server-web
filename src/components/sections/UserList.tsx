@@ -1,5 +1,5 @@
 import React from "react";
-import { Mic, MicOff, Coffee, Gamepad2, Hash, Users } from "lucide-react";
+import { Mic, MicOff, Coffee, Gamepad2, Hash, Users, VolumeX } from "lucide-react";
 import type { User } from "@/types";
 
 interface UserListProps {
@@ -11,6 +11,8 @@ const StatusIcon: React.FC<{ status: string }> = ({ status }) => {
   switch (status) {
     case "away":
       return <Coffee size={14} className="text-yellow-500" />;
+    case "speaker-muted":
+      return <VolumeX size={14} className="text-fresh-text-muted" />;
     case "mic-muted":
       return <MicOff size={14} className="text-fresh-text-muted" />;
     default:

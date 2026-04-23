@@ -23,7 +23,7 @@ export interface User {
 }
 
 /** 用户状态 */
-export type UserStatus = 'online' | 'away' | 'mic-muted';
+export type UserStatus = 'online' | 'away' | 'speaker-muted' | 'mic-muted';
 
 /** 服务器统计数据 */
 export interface ServerStats {
