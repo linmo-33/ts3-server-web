@@ -84,6 +84,7 @@ async function queryAllData(): Promise<TS3AllDataResponse> {
     client_type: client.client_type,
     client_away: client.client_away,
     client_output_muted: client.client_output_muted,
+    client_input_muted: client.client_input_muted,
   }));
 
   const channels: ChannelInfo[] = channelsRaw.map((channel) => ({

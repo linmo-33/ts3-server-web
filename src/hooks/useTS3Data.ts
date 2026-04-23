@@ -20,7 +20,7 @@ function mapClientsToUsers(clients: ClientInfo[], channels: ChannelInfo[]): User
         nickname: client.client_nickname,
         badge: undefined,
         channel: channelMap.get(client.client_channel_id) || '未知频道',
-        status: client.client_away === '1' ? 'away' : client.client_output_muted === '1' ? 'mic-muted' : 'online',
+        status: client.client_away === '1' ? 'away' : client.client_output_muted === '1' ? 'speaker-muted' : client.client_input_muted === '1' ? 'mic-muted' :  'online',
     }));
 }
 
