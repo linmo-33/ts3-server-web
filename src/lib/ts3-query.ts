@@ -152,6 +152,9 @@ async function createConnection(config: QueryRuntimeConfig): Promise<Query> {
   try {
     await query.connect(config.connectionTimeout);
 
+    (query.transport as unknown as { socket?: { setKeepAlive?: (enable: boolean, delay: number) => void } })
+      ?.socket?.setKeepAlive?.(true, 30000);
+
     if (config.protocol === 'tcp') {
       await query.login(config.username, config.password);
 
@@ -186,8 +189,7 @@ async function getConnection(): Promise<Query> {
 
   if (
     globalForTs3.teamspeakQuery &&
-    globalForTs3.connectionKey === connectionKey &&
-    now - (globalForTs3.lastActivity ?? 0) < config.connectionTimeout
+    globalForTs3.connectionKey === connectionKey
   ) {
     try {
       await globalForTs3.teamspeakQuery.fetchServerVersion();
