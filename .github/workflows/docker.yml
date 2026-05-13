@@ -44,7 +44,8 @@ jobs:
       - name: Read package version
         id: version
         run: |
-          echo "value=$(node -p 'require(\"./package.json\").version')" >> "$GITHUB_OUTPUT"
+          package_version=$(node -p 'require("./package.json").version')
+          echo "value=${package_version}" >> "$GITHUB_OUTPUT"
 
       - name: Detect version bump on default branch
         id: version_bump
