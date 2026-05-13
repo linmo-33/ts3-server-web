@@ -25,15 +25,14 @@ const globalForTs3 = globalThis as typeof globalThis & {
   connectionKey?: string | null;
   connectionPromise?: Promise<Query> | null;
   teamspeakQuery?: Query | null;
-  lastActivity?: number;
 };
 
 globalForTs3.teamspeakQuery = globalForTs3.teamspeakQuery ?? null;
 globalForTs3.connectionPromise = globalForTs3.connectionPromise ?? null;
 globalForTs3.connectionKey = globalForTs3.connectionKey ?? null;
-globalForTs3.lastActivity = globalForTs3.lastActivity ?? 0;
 
 const CHANNEL_SPACER_PREFIX_REGEX = /^(?:\[(?:(?:c|l|r|\*)?spacer)\d*\]\s*)+/i;
+const TCP_KEEPALIVE_DELAY_MS = 30000;
 
 function getEnv(names: string[], fallback = ''): string {
   for (const name of names) {
@@ -142,7 +141,6 @@ async function createConnection(config: QueryRuntimeConfig): Promise<Query> {
     if (globalForTs3.teamspeakQuery === query) {
       globalForTs3.teamspeakQuery = null;
       globalForTs3.connectionKey = null;
-      globalForTs3.lastActivity = 0;
     }
   };
 
@@ -153,6 +151,8 @@ async function createConnection(config: QueryRuntimeConfig): Promise<Query> {
     await query.connect(config.connectionTimeout);
 
     if (config.protocol === 'tcp') {
+      (query.transport as unknown as { socket?: { setKeepAlive?: (enable: boolean, delay: number) => void } })
+        ?.socket?.setKeepAlive?.(true, TCP_KEEPALIVE_DELAY_MS);
       await query.login(config.username, config.password);
 
       if (config.serverId !== null) {
@@ -178,7 +178,6 @@ async function createConnection(config: QueryRuntimeConfig): Promise<Query> {
 async function getConnection(): Promise<Query> {
   const config = readConfig();
   const connectionKey = getConnectionKey(config);
-  const now = Date.now();
 
   if (globalForTs3.connectionPromise) {
     return globalForTs3.connectionPromise;
@@ -186,12 +185,10 @@ async function getConnection(): Promise<Query> {
 
   if (
     globalForTs3.teamspeakQuery &&
-    globalForTs3.connectionKey === connectionKey &&
-    now - (globalForTs3.lastActivity ?? 0) < config.connectionTimeout
+    globalForTs3.connectionKey === connectionKey
   ) {
     try {
       await globalForTs3.teamspeakQuery.fetchServerVersion();
-      globalForTs3.lastActivity = now;
       return globalForTs3.teamspeakQuery;
     } catch {
       destroyConnection(globalForTs3.teamspeakQuery);
@@ -211,7 +208,6 @@ async function getConnection(): Promise<Query> {
   try {
     globalForTs3.teamspeakQuery = await globalForTs3.connectionPromise;
     globalForTs3.connectionKey = connectionKey;
-    globalForTs3.lastActivity = now;
     return globalForTs3.teamspeakQuery;
   } catch (error) {
     globalForTs3.teamspeakQuery = null;
@@ -235,14 +231,12 @@ function mapServerInfo(info: RawServerInfo) {
 
 export async function getServerInfo() {
   const ts = await getConnection();
-  globalForTs3.lastActivity = Date.now();
   const info = await ts.commands.serverinfo();
   return mapServerInfo(info);
 }
 
 export async function getClientList() {
   const ts = await getConnection();
-  globalForTs3.lastActivity = Date.now();
   const clients = toArray(
     await ts.commands.clientlist({
       _away: true,
@@ -266,7 +260,6 @@ export async function getClientList() {
 
 export async function getChannelList() {
   const ts = await getConnection();
-  globalForTs3.lastActivity = Date.now();
   const channels = (await ts.commands.channellist({
     _limits: true,
   })) as RawChannelEntry[];
