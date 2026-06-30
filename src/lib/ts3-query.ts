@@ -59,7 +59,11 @@ function parseOptionalNumber(value: string | undefined): number | null {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
-function toArray<T>(value: T | T[]): T[] {
+function toArray<T>(value: T | T[] | null | undefined): T[] {
+  if (value == null) {
+    return [];
+  }
+
   return Array.isArray(value) ? value : [value];
 }
 
@@ -260,9 +264,11 @@ export async function getClientList() {
 
 export async function getChannelList() {
   const ts = await getConnection();
-  const channels = (await ts.commands.channellist({
-    _limits: true,
-  })) as RawChannelEntry[];
+  const channels = toArray(
+    (await ts.commands.channellist({
+      _limits: true,
+    })) as RawChannelEntry | RawChannelEntry[] | null
+  );
 
   return channels.map((channel) => ({
     cid: channel.cid,
