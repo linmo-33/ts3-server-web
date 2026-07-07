@@ -158,18 +158,18 @@ async function createConnection(config: QueryRuntimeConfig): Promise<Query> {
       (query.transport as unknown as { socket?: { setKeepAlive?: (enable: boolean, delay: number) => void } })
         ?.socket?.setKeepAlive?.(true, TCP_KEEPALIVE_DELAY_MS);
       await query.login(config.username, config.password);
+    }
 
-      if (config.serverId !== null) {
-        await query.virtualServers.use({
-          id: config.serverId,
-          nickname: config.nickname,
-        });
-      } else {
-        await query.virtualServers.use({
-          nickname: config.nickname,
-          port: config.virtualPort,
-        });
-      }
+    if (config.serverId !== null) {
+      await query.virtualServers.use({
+        id: config.serverId,
+        nickname: config.nickname,
+      });
+    } else {
+      await query.virtualServers.use({
+        nickname: config.nickname,
+        port: config.virtualPort,
+      });
     }
 
     return query;
